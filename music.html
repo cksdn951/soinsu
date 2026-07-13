@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPOTLIGHT | MUSIC</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <style>
+        :root { --bg-color: #020408; --glass-bg: rgba(255, 255, 255, 0.015); --glass-border: rgba(255, 255, 255, 0.05); --glass-highlight: rgba(255, 255, 255, 0.08); --text-main: #f5f5f7; --text-sub: #86868b; --accent-color: #2997ff; --modal-bg: rgba(10, 12, 16, 0.85); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Pretendard", sans-serif; letter-spacing: -0.02em; }
+        body { background-color: var(--bg-color); background-image: radial-gradient(at 0% 0%, rgba(41, 151, 255, 0.05) 0px, transparent 40%), radial-gradient(at 100% 0%, rgba(161, 85, 255, 0.04) 0px, transparent 40%), radial-gradient(at 50% 100%, rgba(0, 242, 254, 0.03) 0px, transparent 50%); background-attachment: fixed; color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        .floating-back-btn { position: fixed; top: 30px; left: 30px; display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 30px; color: var(--text-main); font-size: 0.9rem; font-weight: 600; text-decoration: none; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); z-index: 100; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+        .floating-back-btn:hover { background: rgba(255, 255, 255, 0.08); transform: translateX(-5px); border-color: rgba(255, 255, 255, 0.15); }
+        .floating-back-btn svg { width: 18px; height: 18px; }
+
+        header { width: 100%; padding: 80px 20px 40px; text-align: center; }
+        header h1 { font-size: 3rem; font-weight: 700; color: #fff; margin-bottom: 28px; }
+        .search-box { position: relative; max-width: 480px; margin: 0 auto; }
+        .search-box input { width: 100%; padding: 16px 24px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 14px; color: #fff; font-size: 0.95rem; backdrop-filter: blur(40px); transition: all 0.4s; text-align: center; }
+        .search-box input:focus { outline: none; border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 12px 30px rgba(0, 0, 0, 0.4); }
+        
+        section { width: 100%; max-width: 1140px; padding: 20px; flex-grow: 1; }
+        footer { width: 100%; padding: 40px 20px; text-align: center; border-top: 1px solid var(--glass-border); margin-top: 40px; color: var(--text-sub); font-size: 0.9rem;}
+        
+        .categories { display: flex; justify-content: center; gap: 24px; margin-bottom: 35px; flex-wrap: wrap; }
+        .category-btn { background: none; border: none; color: var(--text-sub); font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: color 0.3s ease; }
+        .category-btn:hover, .category-btn.active { color: var(--accent-color); font-weight: 600; }
+        /* 💖 즐겨찾기 탭 스타일 별도 지정 */
+        .category-btn.fav-tab { color: #ff4b4b; }
+        .category-btn.fav-tab:hover, .category-btn.fav-tab.active { color: #ff2a2a; }
+        
+        .tags-filter-section { display: flex; flex-direction: column; gap: 20px; margin-bottom: 50px; padding: 30px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 20px; backdrop-filter: blur(30px); }
+        .tag-group { display: flex; align-items: center; gap: 24px; }
+        .tag-group-label { font-size: 0.8rem; color: var(--text-sub); font-weight: 600; min-width: 130px; letter-spacing: 0.02em; }
+        .tag-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag-chip { padding: 6px 14px; background: rgba(255, 255, 255, 0.01); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-sub); font-size: 0.8rem; cursor: pointer; transition: all 0.3s; }
+        .tag-chip:hover { border-color: rgba(255,255,255,0.15); color: #fff; }
+        .tag-chip.active { background: #fff; color: #000; font-weight: 600; }
+
+        .section-title { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: var(--text-sub); margin: 50px 0 20px 0; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .section-title span { color: var(--accent-color); font-weight: 700; font-size: 0.75rem; }
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+        
+        .game-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 18px; padding: 24px; cursor: pointer; backdrop-filter: blur(20px); transition: all 0.5s; display: flex; flex-direction: column; position: relative; }
+        .game-card:hover { transform: translateY(-6px); background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .game-card-img { width: 100%; height: 110px; background: rgba(255, 255, 255, 0.01); border-radius: 10px; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.07); font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; }
+        .game-card h3 { font-size: 1.15rem; color: #fff; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; padding-right: 25px; }
+        .game-card-footer { display: flex; justify-content: space-between; margin-top: auto; font-size: 0.75rem; color: var(--text-sub); font-weight: 500; }
+
+        /* 카드 오른쪽 상단 미니 하트 표시 */
+        .card-heart { position: absolute; top: 152px; right: 24px; color: #ff4b4b; font-size: 0.9rem; display: none; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.4s ease; z-index: 1000; padding: 20px; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); width: 100%; max-width: 580px; padding: 35px; border-radius: 24px; box-shadow: 0 40px 100px rgba(0,0,0,0.5); transform: scale(0.95); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); max-height: 90vh; overflow-y: auto; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        
+        .youtube-container { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 14px; overflow: hidden; margin-bottom: 24px; display: none; border: 1px solid var(--glass-border); }
+        .modal-img { width: 100%; height: 140px; background: rgba(255, 255, 255, 0.01); border-radius: 14px; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.02); font-size: 0.8rem; font-weight: 600; overflow: hidden; }
+        .modal-content h2 { font-size: 1.8rem; color: #fff; margin-bottom: 12px; font-weight: 700; }
+        .modal-desc { color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; margin-bottom: 24px; font-weight: 400; }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+        .info-item { border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 10px; }
+        .info-item span:first-child { display: block; color: var(--text-sub); font-size: 0.8rem; margin-bottom: 4px; font-weight: 500; }
+        .info-item span:last-child { color: #fff; font-size: 0.95rem; font-weight: 500; }
+        
+        /* 💖 모달창 즐겨찾기 버튼 스타일 */
+        .fav-btn { width: 100%; padding: 16px; background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--glass-border); border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.95rem; margin-bottom: 12px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .close-btn { width: 100%; padding: 16px; background: #fff; color: #000; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
+        .close-btn:hover { background: #e8e8ed; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="floating-back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Main
+    </a>
+
+    <header>
+        <h1>MUSIC</h1>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="50곡의 인기 플레이리스트 실시간 검색..." oninput="filterGames()">
+        </div>
+    </header>
+
+    <section>
+        <div class="categories">
+            <button class="category-btn active" onclick="selectCategory('전체보기', this)">전체보기</button>
+            <button class="category-btn" onclick="selectCategory('팝/글로벌', this)">팝/글로벌</button>
+            <button class="category-btn" onclick="selectCategory('K-Pop', this)">K-Pop</button>
+            <button class="category-btn" onclick="selectCategory('힙합/R&B', this)">힙합/R&B</button>
+            <button class="category-btn" onclick="selectCategory('인디/어쿠스틱', this)">인디/어쿠스틱</button>
+            <button class="category-btn fav-tab" onclick="selectCategory('즐겨찾기', this)">❤️ 즐겨찾기만 보기</button>
+        </div>
+
+        <div class="tags-filter-section" id="tagFilterContainer"></div>
+
+        <div id="perfectSection" style="display: none;">
+            <div class="section-title">PERFECT MATCH <span id="perfectCount">0</span></div>
+            <div class="game-grid" id="perfectGrid"></div>
+        </div>
+        <div id="partialSection" style="display: none;">
+            <div class="section-title">PARTIAL MATCH <span id="partialCount">0</span></div>
+            <div class="game-grid" id="partialGrid"></div>
+        </div>
+        <div id="defaultSection">
+            <div class="section-title" id="mainSectionTitle">ALL TRACKS <span id="defaultCount">0</span></div>
+            <div class="game-grid" id="defaultGrid"></div>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 SPOTLIGHT UNIVERSE. Computer Science Front-End Project.
+    </footer>
+
+    <div class="modal-overlay" id="modalOverlay" onclick="closeGameModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="youtube-container" id="m-youtubeContainer"></div>
+            <div class="modal-img" id="m-img">ALBUM COVER</div>
+            
+            <h2 id="m-title">SONG TITLE</h2>
+            <p class="modal-desc" id="m-desc">ALBUM INFO</p>
+            <div class="info-grid">
+                <div class="info-item"><span>ARTIST</span><span id="m-price">-</span></div> 
+                <div class="info-item"><span>GENRE</span><span id="m-category">-</span></div>
+                <div class="info-item"><span>RELEASE DATE</span><span id="m-date">-</span></div>
+                <div class="info-item"><span>TRACK LENGTH</span><span id="m-multi">-</span></div>
+                <div class="info-item" style="grid-column: span 2;"><span>STREAMING ON</span><span id="m-specs">-</span></div>
+            </div>
+            
+            <button id="m-favBtn" class="fav-btn" onclick="toggleFavoriteCurrent()">🤍 즐겨찾기 추가</button>
+            <button class="close-btn" onclick="hideModal()">닫기</button>
+        </div>
+    </div>
+
+    <script>
+        const gamesData = [
+            { name: "Ditto", price: "NewJeans", category: "K-Pop", date: "2022.12.19", specs: "Melon / Spotify", multi: "3:05", desc: "겨울 감성을 가득 담은 뉴진스의 독보적인 몽환적 R&B 댄스곡.", tags: ["아이돌", "감성", "겨울", "댄스", "뉴진스"], youtubeId: "pSUydWEqKwE" },
+            { name: "Dynamite", price: "방탄소년단(BTS)", category: "K-Pop", date: "2020.08.21", specs: "Melon / Apple Music", multi: "3:19", desc: "빌보드 핫 100 1위를 차지한 방탄소년단의 청량하고 신나는 디스코 팝.", tags: ["아이돌", "빌보드", "신나는", "댄스", "bts"], youtubeId: "gdZLi9oWNZg" },
+            { name: "Cruel Summer", price: "Taylor Swift", category: "팝/글로벌", date: "2019.08.23", specs: "Spotify / Apple", multi: "2:58", desc: "여름의 강렬한 열기와 혼란스러운 감정을 완벽히 녹여낸 신스팝의 명곡.", tags: ["팝", "테일러", "여름", "신나는", "드라이브"], youtubeId: "ic8j13UFLI8" },
+            { name: "Blinding Lights", price: "The Weeknd", category: "팝/글로벌", date: "2019.11.29", specs: "Spotify", multi: "3:20", desc: "80년대 신스웨이브 레트로 사운드를 현대적으로 완벽히 재해석한 메가 히트곡.", tags: ["팝", "레트로", "빌보드", "드라이브", "신나는"], youtubeId: "fHI8X4OXskQ" },
+            { name: "사건의 지평선", price: "윤하", category: "인디/어쿠스틱", date: "2022.03.30", specs: "Melon / Genie", multi: "5:00", desc: "이별의 순간을 우주적 스케일에 빗대어 벅찬 밴드 사운드로 노래한 역주행 명곡.", tags: ["밴드", "감성", "보컬", "역주행", "이별"], youtubeId: "BBdC1rl5sKY" },
+            { name: "Love Lee", price: "AKMU (악뮤)", category: "K-Pop", date: "2023.08.21", specs: "Melon", multi: "2:58", desc: "악뮤 특유의 발랄함과 재치 있는 가사가 돋보이는 사랑스러운 어쿠스틱 팝.", tags: ["어쿠스틱", "신나는", "사랑", "듀오"], youtubeId: "EIz09kLzNFM" },
+            { name: "밤양갱", price: "비비 (BIBI)", category: "인디/어쿠스틱", date: "2024.02.13", specs: "Melon", multi: "2:26", desc: "달콤하고 쓸쓸한 왈츠풍의 리듬 위로 흐르는 독특한 보이스.", tags: ["인디", "감성", "왈츠", "이별"], youtubeId: "sMDXg7U_wGo" },
+            { name: "As It Was", price: "Harry Styles", category: "팝/글로벌", date: "2022.04.01", specs: "Spotify", multi: "2:47", desc: "경쾌한 템포 속에 담긴 쓸쓸한 가사가 인상적인 글로벌 메가 히트 신스팝.", tags: ["팝", "빌보드", "드라이브", "감성"], youtubeId: "H5v3kku4y6Q" },
+            { name: "Super Shy", price: "NewJeans", category: "K-Pop", date: "2023.07.07", specs: "Melon / Apple", multi: "2:34", desc: "저지 클럽 리듬 위로 산뜻하게 흐르는 하이틴 감성의 댄스곡.", tags: ["아이돌", "뉴진스", "신나는", "댄스", "여름"], youtubeId: "ArmDp-zijFI" },
+            { name: "Hype Boy", price: "NewJeans", category: "K-Pop", date: "2022.08.01", specs: "Melon", multi: "2:59", desc: "세련된 비트와 Y2K 감성이 완벽하게 조화된 신드롬급 아이돌 댄스곡.", tags: ["아이돌", "뉴진스", "신나는", "댄스"], youtubeId: "11cta61wi0g" },
+            { name: "첫 만남은 계획대로 되지 않아", price: "TWS (투어스)", category: "K-Pop", date: "2024.01.22", specs: "Melon", multi: "2:32", desc: "새로운 만남의 설렘 och 떨림을 펑키한 리듬으로 풀어낸 청량 팝.", tags: ["아이돌", "신나는", "청량", "댄스"], youtubeId: "hVAc1W0RQiA" },
+            { name: "To_X", price: "태연", category: "힙합/R&B", date: "2023.11.27", specs: "Melon", multi: "2:50", desc: "감각적인 기타 리프와 세련된 알앤비 그루브가 돋보이는 이별 노래.", tags: ["알앤비", "이별", "감성", "보컬"], youtubeId: "6p6Lp267X98" },
+            { name: "Perfect Night", price: "LE SSERAFIM", category: "팝/글로벌", date: "2023.10.27", specs: "Spotify / Melon", multi: "2:39", desc: "오버워치와의 콜라보로 탄생한 부드럽고 몽환적인 드라이브 팝.", tags: ["아이돌", "영어곡", "드라이브", "신나는", "게임"], youtubeId: "hLvHDjsyBF0" },
+            { name: "Love Wins All", price: "아이유", category: "인디/어쿠스틱", date: "2024.01.24", specs: "Melon", multi: "4:31", desc: "웅장한 오케스트라 사운드와 함께 피어나는 압도적인 보컬의 발라드.", tags: ["발라드", "감성", "보컬", "사랑", "아이유"], youtubeId: "CHq9S06K1Ec" },
+            { name: "Watermelon Sugar", price: "Harry Styles", category: "팝/글로벌", date: "2019.12.13", specs: "Spotify", multi: "2:54", desc: "여름 과일의 달콤함을 청각화한 듯한 펑키하고 기분 좋은 팝 송.", tags: ["팝", "여름", "신나는", "드라이브"], youtubeId: "E07s5ZYygMg" },
+            { name: "Seven_feat_Latto", price: "정국", category: "팝/글로벌", date: "2023.07.14", specs: "Spotify", multi: "3:04", desc: "UK 개러지 리듬이 귀를 사로잡는 세련된 글로벌 팝 댄스곡.", tags: ["bts", "빌보드", "팝", "신나는", "댄스"], youtubeId: "QU9c0053UAU" },
+            { name: "취중고백", price: "김민석 (멜로망스)", category: "인디/어쿠스틱", date: "2021.12.19", specs: "Melon", multi: "4:00", desc: "진심을 담아 부르는 부드럽고 로맨틱한 분위기의 고백송.", tags: ["발라드", "감성", "보컬", "사랑"], youtubeId: "81z3Ff9G09E" },
+            { name: "Shape of You", price: "Ed Sheeran", category: "팝/글로벌", date: "2017.01.06", specs: "Spotify", multi: "3:53", desc: "마림바 리듬과 어쿠스틱 기타가 완벽하게 어우러진 메가 히트 팝.", tags: ["팝", "신나는", "댄스", "빌보드"], youtubeId: "JGwWNGJdvx8" },
+            { name: "Peaches", price: "Justin Bieber", category: "힙합/R&B", date: "2021.03.19", specs: "Spotify", multi: "3:18", desc: "햇살 가득한 캘리포니아의 바이브가 느껴지는 R&B 팝.", tags: ["알앤비", "팝", "드라이브", "신나는"], youtubeId: "tQ0yjYUFKAE" },
+            { name: "Stay", price: "The Kid LAROI, Justin Bieber", category: "팝/글로벌", date: "2021.07.09", specs: "Spotify", multi: "2:21", desc: "빠른 템포의 신스 사운드와 중독적인 멜로디의 하이퍼팝.", tags: ["팝", "신나는", "빌보드", "드라이브"], youtubeId: "kTJczUoc5G4" },
+            { name: "에잇_feat_SUGA", price: "아이유", category: "K-Pop", date: "2020.05.06", specs: "Melon", multi: "2:47", desc: "스물여덟 동갑내기 뮤지션들이 뭉쳐 만든 청량한 밴드 팝.", tags: ["아이유", "bts", "밴드", "드라이브", "청량"], youtubeId: "TgOu00Mf3-8" },
+            { name: "I AM", price: "IVE (아이브)", category: "K-Pop", date: "2023.04.10", specs: "Melon", multi: "3:03", desc: "자신감 넘치는 애티튜드와 폭발적인 고음이 돋보이는 댄스곡.", tags: ["아이돌", "신나는", "댄스", "보컬"], youtubeId: "6ZUIwj3FgUY" },
+            { name: "ETA", price: "NewJeans", category: "K-Pop", date: "2023.07.21", specs: "Melon", multi: "2:31", desc: "빠른 비트와 브라스 사운드가 어우러진 역동적인 댄스곡.", tags: ["아이돌", "뉴진스", "신나는", "댄스"], youtubeId: "jOTfBlKSQYY" },
+            { name: "밤편지", price: "아이유", category: "인디/어쿠스틱", date: "2017.03.24", specs: "Melon", multi: "4:13", desc: "어쿠스틱 기타 선율 위로 조용히 읊조리는 애틋한 사랑 발라드.", tags: ["아이유", "발라드", "감성", "어쿠스틱", "밤"], youtubeId: "BzYnNdJh5wE" },
+            { name: "TOMBOY", price: "(여자)아이들", category: "K-Pop", date: "2022.03.14", specs: "Melon", multi: "2:54", desc: "강렬한 록 사운드와 직설적인 가사가 매력적인 펑크 록 스타일 댄스곡.", tags: ["아이돌", "밴드", "신나는", "댄스"], youtubeId: "Jh4QBaYdcXw" },
+            { name: "Attention", price: "Charlie Puth", category: "팝/글로벌", date: "2017.04.21", specs: "Spotify", multi: "3:28", desc: "그루브 넘치는 베이스라인이 귀를 맴도는 세련된 팝.", tags: ["팝", "드라이브", "알앤비", "신나는"], youtubeId: "nfs8NYg7yQM" },
+            { name: "Bad Guy", price: "Billie Eilish", category: "팝/글로벌", date: "2019.03.29", specs: "Spotify", multi: "3:14", desc: "미니멀한 비트와 속삭이는 듯한 보컬이 만들어낸 압도적인 다크 팝.", tags: ["팝", "스릴러", "빌보드", "신나는"], youtubeId: "DyDfgMOUjCI" },
+            { name: "봄날", price: "방탄소년단(BTS)", category: "K-Pop", date: "2017.02.13", specs: "Melon", multi: "4:34", desc: "아련한 그리움을 노래하며 매년 봄마다 역주행하는 메가 히트 감성 발라드.", tags: ["아이돌", "bts", "감성", "발라드", "봄"], youtubeId: "xEeFrLSkMm8" },
+            { name: "Next Level", price: "aespa", category: "K-Pop", date: "2021.05.17", specs: "Melon", multi: "3:41", desc: "독특한 곡 전개와 사이버펑크틱한 비트가 어우러진 메타버스 댄스곡.", tags: ["아이돌", "신나는", "댄스", "sf"], youtubeId: "4TWR90KJl84" },
+            { name: "Anti-Hero", price: "Taylor Swift", category: "팝/글로벌", date: "2022.10.21", specs: "Spotify", multi: "3:20", desc: "스스로에 대한 불안과 성찰을 레트로한 신스팝으로 담아낸 곡.", tags: ["테일러", "팝", "감성", "빌보드"], youtubeId: "b1kbLwvqugk" },
+            { name: "Counting Stars", price: "OneRepublic", category: "팝/글로벌", date: "2013.06.14", specs: "Spotify", multi: "4:17", desc: "포크와 록이 결합된 폭발적인 에너지를 뿜어내는 밴드 음악.", tags: ["밴드", "팝", "신나는", "드라이브"], youtubeId: "hT_nvWreIhg" },
+            { name: "모든 날_모든 순간", price: "폴킴", category: "인디/어쿠스틱", date: "2018.03.20", specs: "Melon", multi: "3:30", desc: "진심 어린 목소리로 일상의 사랑을 노래하는 국민 축가 발라드.", tags: ["발라드", "감성", "사랑", "어쿠스틱"], youtubeId: "ZhzE9bH7R_U" },
+            { name: "OMG", price: "NewJeans", category: "K-Pop", date: "2023.01.02", specs: "Melon", multi: "3:32", desc: "통통 튀는 힙합 알앤비 드럼 위로 올려진 뉴진스만의 매력적인 화음.", tags: ["아이돌", "뉴진스", "알앤비", "신나는"], youtubeId: "sVTy_wmn5SU" },
+            { name: "Levitating", price: "Dua Lipa", category: "팝/글로벌", date: "2020.10.01", specs: "Spotify", multi: "3:23", desc: "은하수를 누비는 듯한 환상적인 레트로 디스코 댄스 팝.", tags: ["팝", "레트로", "신나는", "댄스"], youtubeId: "TUVcZfQe-Kw" },
+            { name: "다정히 내 이름을 부르면", price: "경서예지, 전건호", category: "인디/어쿠스틱", date: "2021.05.19", specs: "Melon", multi: "3:41", desc: "남녀의 아름다운 하모니가 돋보이는 미디엄 템포의 감성 발라드.", tags: ["발라드", "감성", "사랑", "보컬"], youtubeId: "Y8ZInVf_HwA" },
+            { name: "Kill Bill", price: "SZA", category: "힙합/R&B", date: "2023.01.10", specs: "Spotify", multi: "2:33", desc: "부드러운 알앤비 멜로디에 반전되는 섬뜩한 가사가 매력적인 트랙.", tags: ["알앤비", "빌보드", "이별", "팝"], youtubeId: "MSRcC6shJD4" },
+            { name: "That That_prod_feat_SUGA", price: "싸이", category: "K-Pop", date: "2022.04.29", specs: "Melon", multi: "2:54", desc: "전 세계를 들썩이게 만든 강렬한 비트와 코믹한 서부극 콘셉트의 댄스.", tags: ["신나는", "댄스", "파티", "bts"], youtubeId: "8dJyRm2jJ-U" },
+            { name: "사랑은 늘 도망가", price: "임영웅", category: "인디/어쿠스틱", date: "2021.10.11", specs: "Melon", multi: "4:03", desc: "원곡의 감성을 뛰어넘는 깊은 보이스로 재해석한 명품 OST 발라드.", tags: ["발라드", "감성", "보컬", "사랑"], youtubeId: "78rOnZ_Z6U8" },
+            { name: "Sugar", price: "Maroon 5", category: "팝/글로벌", date: "2015.01.13", specs: "Spotify", multi: "3:55", desc: "결혼식장에 깜짝 등장하는 뮤직비디오로 유명한 펑키 팝.", tags: ["팝", "밴드", "신나는", "사랑"], youtubeId: "09R8_2nJtjg" },
+            { name: "좋은 날", price: "아이유", category: "K-Pop", date: "2010.12.09", specs: "Melon", multi: "3:53", desc: "3단 고음 신드롬을 일으킨 국민 여동생 아이유의 웅장한 뮤지컬 팝.", tags: ["아이유", "신나는", "댄스", "보컬"], youtubeId: "jeqdYqsrsA0" },
+            { name: "Dance Monkey", price: "Tones And I", category: "팝/글로벌", date: "2019.05.10", specs: "Spotify", multi: "3:29", desc: "독특한 음색 och 중독적인 일렉트로 팝 사운드로 전 세계를 강타한 인디 팝.", tags: ["팝", "신나는", "인디", "댄스"], youtubeId: "q0hyYWKXF0Q" },
+            { name: "신호등", price: "이무진", category: "인디/어쿠스틱", date: "2021.05.14", specs: "Melon", multi: "3:52", desc: "사회 초년생의 혼란스러움을 신호등에 빗댄 재치 있는 어쿠스틱 팝.", tags: ["어쿠스틱", "밴드", "감성", "청춘"], youtubeId: "SK6SmWnxKno" },
+            { name: "Smells Like Teen Spirit", price: "Nirvana", category: "팝/글로벌", date: "1991.09.10", specs: "Spotify", multi: "5:01", desc: "90년대 그런지 록의 시대를 연 압도적인 폭발력의 전설적인 록 밴드 곡.", tags: ["밴드", "명작", "록", "신나는"], youtubeId: "hTWKbfoikeg" },
+            { name: "우주를 줄게", price: "볼빨간사춘기", category: "인디/어쿠스틱", date: "2016.08.29", specs: "Melon", multi: "3:33", desc: "독보적인 음색과 우주를 날아가는 듯한 사랑스러운 가사가 매력적인 어쿠스틱 곡.", tags: ["어쿠스틱", "사랑", "감성", "듀오"], youtubeId: "9u7dEKiaIJY" },
+            { name: "Thinking Out Loud", price: "Ed Sheeran", category: "팝/글로벌", date: "2014.09.24", specs: "Spotify", multi: "4:41", desc: "로맨틱한 기타 선율 위로 흘러가는 세기의 명품 팝 발라드.", tags: ["팝", "발라드", "사랑", "어쿠스틱"], youtubeId: "lp-EO5I60KA" },
+            { name: "아무노래", price: "지코 (ZICO)", category: "힙합/R&B", date: "2020.01.13", specs: "Melon", multi: "3:47", desc: "댄스 챌린지 열풍의 시초가 된 유쾌하고 리드미컬한 힙합 트랙.", tags: ["힙합", "신나는", "파티", "댄스"], youtubeId: "UuV2BmJ1p_Y" },
+            { name: "비 오는 날 듣기 좋은 노래", price: "에픽하이 (EPIK HIGH)", category: "힙합/R&B", date: "2021.06.29", specs: "Melon", multi: "3:25", desc: "비 오는 날의 감성을 정확히 저격하는 서정적인 멜로디 힙합.", tags: ["힙합", "감성", "비", "보컬"], youtubeId: "AnNfL6MvM98" },
+            { name: "Flowers", price: "Miley Cyrus", category: "팝/글로벌", date: "2023.01.12", specs: "Spotify", multi: "3:20", desc: "스스로를 사랑하는 독립적인 메시지를 세련된 디스코 바이브로 담아낸 곡.", tags: ["팝", "빌보드", "신나는", "드라이브"], youtubeId: "G7KNmW9a75Y" },
+            { name: "너를 만나", price: "폴킴", category: "인디/어쿠스틱", date: "2018.10.29", specs: "Melon", multi: "4:32", desc: "담담하게 진심을 전하는 목소리가 심금을 울리는 대표적인 감성 발라드.", tags: ["발라드", "감성", "보컬", "사랑"], youtubeId: "YByJgL3N064" },
+            { name: "Uptown Funk", price: "Mark Ronson (feat. Bruno Mars)", category: "팝/글로벌", date: "2014.11.10", specs: "Spotify", multi: "4:30", desc: "어깨를 들썩이게 만드는 최강의 레트로 펑크 댄스 마스터피스.", tags: ["팝", "신나는", "댄스", "파티"], youtubeId: "OPf0YbXqDm0" }
+        ];
+
+        const tagGroupsData = {
+            "장르 디테일": ["아이돌", "발라드", "팝", "알앤비", "힙합", "어쿠스틱", "밴드"],
+            "무드 / 특징": ["신나는", "감성", "드라이브", "파티", "사랑", "이별", "겨울", "여름"],
+            "아티스트 키워드": ["bts", "뉴진스", "아이유", "테일러", "빌보드", "보컬", "듀오"]
+        };
+
+        let selectedTags = [];
+        let currentCategory = "전체보기";
+        let currentOpenedGame = null; // 현재 열린 곡 객체 저장용
+
+        function initGroupedTags() {
+            const container = document.getElementById('tagFilterContainer');
+            container.innerHTML = "";
+            for (const [groupName, tags] of Object.entries(tagGroupsData)) {
+                let groupHTML = `<div class="tag-group"><div class="tag-group-label">${groupName}</div><div class="tag-chips">`;
+                tags.forEach(tag => { groupHTML += `<span class="tag-chip" onclick="toggleTag('${tag}', this)"># ${tag}</span>`; });
+                groupHTML += `</div></div>`;
+                container.innerHTML += groupHTML;
+            }
+        }
+
+        function toggleTag(tag, element) {
+            const index = selectedTags.indexOf(tag);
+            if (index > -1) { selectedTags.splice(index, 1); element.classList.remove('active'); } 
+            else { selectedTags.push(tag); element.classList.add('active'); }
+            filterGames();
+        }
+
+        function selectCategory(category, element) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            filterGames();
+        }
+
+        function filterGames() {
+            const searchKeyword = document.getElementById('searchInput').value.toLowerCase().trim();
+            const favorites = JSON.parse(localStorage.getItem('music_favorites') || '[]');
+
+            // 💖 즐겨찾기 메뉴 선택 시 특별 필터링 처리
+            if (currentCategory === "즐겨찾기") {
+                document.getElementById('perfectSection').style.display = "none";
+                document.getElementById('partialSection').style.display = "none";
+                document.getElementById('defaultSection').style.display = "block";
+                document.getElementById('mainSectionTitle').innerHTML = `MY FAVORITES <span id="defaultCount">0</span>`;
+                
+                const favGames = gamesData.filter(g => favorites.includes(g.name) && 
+                    (searchKeyword === "" || g.name.toLowerCase().includes(searchKeyword) || g.price.toLowerCase().includes(searchKeyword))
+                );
+                renderToGrid('defaultGrid', 'defaultCount', favGames);
+                return;
+            }
+
+            // 기본 타이틀 원복
+            document.getElementById('mainSectionTitle').innerHTML = `ALL TRACKS <span id="defaultCount">0</span>`;
+
+            if (selectedTags.length === 0 && searchKeyword === "") {
+                document.getElementById('perfectSection').style.display = "none";
+                document.getElementById('partialSection').style.display = "none";
+                document.getElementById('defaultSection').style.display = "block";
+                const baseGames = gamesData.filter(g => currentCategory === "전체보기" || g.category === currentCategory);
+                renderToGrid('defaultGrid', 'defaultCount', baseGames);
+                return;
+            }
+
+            document.getElementById('defaultSection').style.display = "none";
+            document.getElementById('perfectSection').style.display = "block";
+            document.getElementById('partialSection').style.display = "block";
+
+            let perfectMatches = [], partialMatches = [];
+
+            gamesData.forEach(game => {
+                const matchesCategory = (currentCategory === "전체보기" || game.category === currentCategory);
+                if (!matchesCategory) return;
+
+                const matchesText = searchKeyword === "" || 
+                                    game.name.toLowerCase().includes(searchKeyword) || 
+                                    game.price.toLowerCase().includes(searchKeyword) || 
+                                    game.category.toLowerCase().includes(searchKeyword) ||
+                                    (game.tags && game.tags.some(t => t.toLowerCase().includes(searchKeyword)));
+                if (!matchesText) return;
+
+                let matchCount = 0;
+                if (selectedTags.length > 0) {
+                    selectedTags.forEach(selectedTag => {
+                        if (game.tags.includes(selectedTag)) { matchCount++; }
+                    });
+                } else { matchCount = 999; }
+
+                if (matchCount === 999 || matchCount === selectedTags.length) { perfectMatches.push(game); } 
+                else if (matchCount > 0) { partialMatches.push(game); }
+            });
+
+            renderToGrid('perfectGrid', 'perfectCount', perfectMatches);
+            renderToGrid('partialGrid', 'partialCount', partialMatches);
+        }
+
+        function renderToGrid(gridId, countId, gamesArray) {
+            const grid = document.getElementById(gridId);
+            document.getElementById(countId).innerText = gamesArray.length;
+            grid.innerHTML = "";
+
+            if (gamesArray.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:var(--text-sub); padding:30px; font-size:0.85rem;">조건에 일치하는 항목이 없습니다.</p>`;
+                return;
+            }
+
+            const favorites = JSON.parse(localStorage.getItem('music_favorites') || '[]');
+
+            gamesArray.forEach(game => {
+                const safeName = encodeURIComponent(game.name.replace(/[():]/g, '_'));
+                const isFav = favorites.includes(game.name);
+                const cardHTML = `
+                    <div class="game-card" onclick="openGameModal(${JSON.stringify(game).replace(/"/g, '&quot;')})">
+                        <div class="game-card-img">
+                            <img src="images/${safeName}.webp" alt="${game.name}" 
+                                 onerror="if(!this.dataset.tried){this.dataset.tried=true; this.src='images/${safeName}.jpg';}else{this.onerror=null; this.src='https://via.placeholder.com/300x110/1a1d24/86868b?text=No+Image';}"
+                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        </div>
+                        <h3>${game.name}</h3>
+                        <span class="card-heart" style="display: ${isFav ? 'block' : 'none'}">❤️</span>
+                        <div class="game-card-footer">
+                            <span class="tag">${game.category}</span>
+                            <span class="price-tag">${game.price}</span>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+            });
+        }
+
+        function openGameModal(game) {
+            currentOpenedGame = game; 
+            const safeName = encodeURIComponent(game.name.replace(/[():]/g, '_'));
+            const modalImg = document.getElementById('m-img');
+            const ytContainer = document.getElementById('m-youtubeContainer');
+
+            if (game.youtubeId) {
+                ytContainer.style.display = "block";
+                modalImg.style.display = "none";
+                ytContainer.innerHTML = `
+                    <iframe width="100%" height="100%" 
+                            src="https://www.youtube.com/embed/${game.youtubeId}?autoplay=1&rel=0" 
+                            title="YouTube video player" frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen style="border: none;">
+                    </iframe>`;
+            } else {
+                ytContainer.style.display = "none";
+                ytContainer.innerHTML = "";
+                modalImg.style.display = "flex";
+                modalImg.innerHTML = `<img src="images/${safeName}.jpg" alt="${game.name}" 
+                                           onerror="if(!this.dataset.tried){this.dataset.tried=true; this.src='images/${safeName}.webp';}else{this.onerror=null; this.src='https://via.placeholder.com/580x140/1a1d24/86868b?text=No+Image';}" 
+                                           style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;">`;
+            }
+
+            document.getElementById('m-title').innerText = game.name;
+            document.getElementById('m-desc').innerText = game.desc;
+            document.getElementById('m-price').innerText = game.price;
+            document.getElementById('m-category').innerText = game.category;
+            document.getElementById('m-date').innerText = game.date;
+            document.getElementById('m-multi').innerText = game.multi;
+            document.getElementById('m-specs').innerText = game.specs;
+            
+            updateFavoriteButtonState(); // 즐겨찾기 버튼 텍스트 최신화
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        // 💖 즐겨찾기 버튼 상태(텍스트/스타일) 업데이트 함수
+        function updateFavoriteButtonState() {
+            const favBtn = document.getElementById('m-favBtn');
+            if (!currentOpenedGame) return;
+            
+            const favorites = JSON.parse(localStorage.getItem('music_favorites') || '[]');
+            if (favorites.includes(currentOpenedGame.name)) {
+                favBtn.innerText = "❤️ 즐겨찾기 해제";
+                favBtn.style.background = "rgba(255, 75, 75, 0.1)";
+                favBtn.style.borderColor = "rgba(255, 75, 75, 0.2)";
+                favBtn.style.color = "#ff4b4b";
+            } else {
+                favBtn.innerText = "🤍 즐겨찾기 추가";
+                favBtn.style.background = "rgba(255, 255, 255, 0.03)";
+                favBtn.style.borderColor = "var(--glass-border)";
+                favBtn.style.color = "#fff";
+            }
+        }
+
+        // 💖 즐겨찾기 추가/해제 토글 로직
+        function toggleFavoriteCurrent() {
+            if (!currentOpenedGame) return;
+            
+            let favorites = JSON.parse(localStorage.getItem('music_favorites') || '[]');
+            const index = favorites.indexOf(currentOpenedGame.name);
+            
+            if (index > -1) { favorites.splice(index, 1); } // 이미 있으면 삭제 
+            else { favorites.push(currentOpenedGame.name); } // 없으면 추가
+            
+            localStorage.setItem('music_favorites', JSON.stringify(favorites));
+            
+            updateFavoriteButtonState(); // 버튼 UI 즉시 변경
+            filterGames(); // 뒤에 깔린 메인 화면 리스트 새로고침 (하트 즉시 표기되도록)
+        }
+
+        function hideModal() { 
+            document.getElementById('m-youtubeContainer').innerHTML = ""; 
+            document.getElementById('modalOverlay').classList.remove('active'); 
+            currentOpenedGame = null;
+        }
+        
+        function closeGameModal(event) { if(event.target === document.getElementById('modalOverlay')) hideModal(); }
+
+        window.onload = () => { initGroupedTags(); filterGames(); };
+    </script>
+</body>
+</html>

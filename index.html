@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPOTLIGHT UNIVERSE</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            --bg-color: #020408;
+            --glass-bg: rgba(255, 255, 255, 0.015);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-highlight: rgba(255, 255, 255, 0.08);
+            --text-main: #f5f5f7; 
+            --text-sub: #86868b;  
+            --accent-color: #2997ff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Pretendard", -apple-system, sans-serif; -webkit-font-smoothing: antialiased; letter-spacing: -0.02em; }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(41, 151, 255, 0.05) 0px, transparent 40%),
+                radial-gradient(at 100% 0%, rgba(161, 85, 255, 0.04) 0px, transparent 40%),
+                radial-gradient(at 50% 100%, rgba(0, 242, 254, 0.03) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header { width: 100%; padding: 100px 20px 50px; text-align: center; }
+        header h1 { font-size: 3.8rem; font-weight: 800; color: var(--text-main); margin-bottom: 18px; }
+        header p { color: var(--text-sub); font-size: 1.15rem; font-weight: 500; }
+
+        section {
+            width: 100%; max-width: 1200px; padding: 20px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px;
+            flex-grow: 1;
+            align-content: center;
+        }
+
+        .hub-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight);
+            border-radius: 28px; padding: 50px 30px; text-decoration: none; display: flex; flex-direction: column; align-items: center;
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); text-align: center;
+        }
+
+        .hub-card:hover { 
+            transform: translateY(-12px); background: rgba(255, 255, 255, 0.03); 
+            border-color: rgba(255, 255, 255, 0.15); box-shadow: 0 20px 50px rgba(41, 151, 255, 0.15); 
+        }
+        
+        .hub-card h2 { font-size: 2.2rem; color: #fff; margin-bottom: 20px; font-weight: 700; }
+        .hub-card p { color: var(--text-sub); line-height: 1.6; font-size: 1.05rem; }
+
+        footer { width: 100%; padding: 40px 20px; text-align: center; border-top: 1px solid var(--glass-border); margin-top: 60px; color: var(--text-sub); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SPOTLIGHT UNIVERSE</h1>
+        <p>가중치 기반 큐레이션 알고리즘을 통한 완벽한 취향 분석</p>
+    </header>
+
+    <section>
+        <a href="game.html" class="hub-card">
+            <h2>GAMES</h2>
+            <p>100개의 명작 타이틀과 함께하는<br>전략적인 게이밍 라이프</p>
+        </a>
+        <a href="movie.html" class="hub-card">
+            <h2>MOVIES</h2>
+            <p>50편의 글로벌 마스터피스<br>당신의 인생 영화를 찾아보세요</p>
+        </a>
+        <a href="music.html" class="hub-card">
+            <h2>MUSIC</h2>
+            <p>50곡의 다채로운 장르<br>플레이리스트를 빛내줄 음악들</p>
+        </a>
+    </section>
+
+    <footer>
+        &copy; 2026 SPOTLIGHT UNIVERSE. Computer Science Front-End Project.
+    </footer>
+</body>
+</html>

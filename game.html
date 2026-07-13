@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPOTLIGHT | GAMES</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <style>
+        :root { --bg-color: #020408; --glass-bg: rgba(255, 255, 255, 0.015); --glass-border: rgba(255, 255, 255, 0.05); --glass-highlight: rgba(255, 255, 255, 0.08); --text-main: #f5f5f7; --text-sub: #86868b; --accent-color: #2997ff; --modal-bg: rgba(10, 12, 16, 0.5); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Pretendard", sans-serif; letter-spacing: -0.02em; }
+        body { background-color: var(--bg-color); background-image: radial-gradient(at 0% 0%, rgba(41, 151, 255, 0.05) 0px, transparent 40%), radial-gradient(at 100% 0%, rgba(161, 85, 255, 0.04) 0px, transparent 40%), radial-gradient(at 50% 100%, rgba(0, 242, 254, 0.03) 0px, transparent 50%); background-attachment: fixed; color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        /* 플로팅 뒤로가기 버튼 CSS */
+        .floating-back-btn { position: fixed; top: 30px; left: 30px; display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 30px; color: var(--text-main); font-size: 0.9rem; font-weight: 600; text-decoration: none; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); z-index: 100; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+        .floating-back-btn:hover { background: rgba(255, 255, 255, 0.08); transform: translateX(-5px); border-color: rgba(255, 255, 255, 0.15); }
+        .floating-back-btn svg { width: 18px; height: 18px; }
+
+        header { width: 100%; padding: 80px 20px 40px; text-align: center; }
+        header h1 { font-size: 3rem; font-weight: 700; color: #fff; margin-bottom: 28px; }
+        .search-box { position: relative; max-width: 480px; margin: 0 auto; }
+        .search-box input { width: 100%; padding: 16px 24px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 14px; color: #fff; font-size: 0.95rem; backdrop-filter: blur(40px); transition: all 0.4s; text-align: center; }
+        .search-box input:focus { outline: none; border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 12px 30px rgba(0, 0, 0, 0.4); }
+        
+        section { width: 100%; max-width: 1140px; padding: 20px; flex-grow: 1; }
+        footer { width: 100%; padding: 40px 20px; text-align: center; border-top: 1px solid var(--glass-border); margin-top: 40px; color: var(--text-sub); font-size: 0.9rem;}
+        
+        .categories { display: flex; justify-content: center; gap: 24px; margin-bottom: 35px; flex-wrap: wrap; }
+        .category-btn { background: none; border: none; color: var(--text-sub); font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: color 0.3s ease; }
+        .category-btn:hover, .category-btn.active { color: var(--accent-color); font-weight: 600; }
+        
+        .tags-filter-section { display: flex; flex-direction: column; gap: 20px; margin-bottom: 50px; padding: 30px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 20px; backdrop-filter: blur(30px); }
+        .tag-group { display: flex; align-items: center; gap: 24px; }
+        .tag-group-label { font-size: 0.8rem; color: var(--text-sub); font-weight: 600; min-width: 130px; letter-spacing: 0.02em; }
+        .tag-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag-chip { padding: 6px 14px; background: rgba(255, 255, 255, 0.01); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-sub); font-size: 0.8rem; cursor: pointer; transition: all 0.3s; }
+        .tag-chip:hover { border-color: rgba(255,255,255,0.15); color: #fff; }
+        .tag-chip.active { background: #fff; color: #000; font-weight: 600; }
+
+        .section-title { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: var(--text-sub); margin: 50px 0 20px 0; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .section-title span { color: var(--accent-color); font-weight: 700; font-size: 0.75rem; }
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+        
+        .game-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 18px; padding: 24px; cursor: pointer; backdrop-filter: blur(20px); transition: all 0.5s; display: flex; flex-direction: column; }
+        .game-card:hover { transform: translateY(-6px); background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .game-card-img { width: 100%; height: 110px; background: rgba(255,255,255,0.01); border-radius: 10px; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.02); }
+        .game-card h3 { font-size: 1.15rem; color: #fff; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+        .game-card-footer { display: flex; justify-content: space-between; margin-top: auto; font-size: 0.75rem; color: var(--text-sub); font-weight: 500; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(40px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.5s; z-index: 1000; padding: 20px; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); width: 100%; max-width: 580px; padding: 44px; border-radius: 28px; box-shadow: 0 40px 100px rgba(0,0,0,0.5); transform: scale(0.95); transition: all 0.5s; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-img { width: 100%; height: 140px; background: rgba(255,255,255,0.01); border-radius: 14px; margin-bottom: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.02); }
+        .modal-content h2 { font-size: 2rem; color: #fff; margin-bottom: 12px; font-weight: 700; }
+        .modal-desc { color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; margin-bottom: 32px; font-weight: 400; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 36px; }
+        .info-item { border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 12px; }
+        .info-item span:first-child { display: block; color: var(--text-sub); font-size: 0.8rem; margin-bottom: 4px; font-weight: 500; }
+        .info-item span:last-child { color: #fff; font-size: 0.95rem; font-weight: 500; }
+        .close-btn { width: 100%; padding: 16px; background: #fff; color: #000; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
+        .close-btn:hover { background: #e8e8ed; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="floating-back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Main
+    </a>
+
+    <header>
+        <h1>GAMES</h1>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="100개의 명작 게임 실시간 검색..." oninput="filterGames()">
+        </div>
+    </header>
+
+    <section>
+        <div class="categories">
+            <button class="category-btn active" onclick="selectCategory('전체보기', this)">전체보기</button>
+            <button class="category-btn" onclick="selectCategory('FPS/슈팅', this)">FPS/슈팅</button>
+            <button class="category-btn" onclick="selectCategory('액션/RPG', this)">액션/RPG</button>
+            <button class="category-btn" onclick="selectCategory('오픈월드/생존', this)">오픈월드/생존</button>
+            <button class="category-btn" onclick="selectCategory('캐주얼/기타', this)">캐주얼/기타</button>
+        </div>
+
+        <div class="tags-filter-section" id="tagFilterContainer"></div>
+
+        <div id="perfectSection" style="display: none;">
+            <div class="section-title">PERFECT MATCH <span id="perfectCount">0</span></div>
+            <div class="game-grid" id="perfectGrid"></div>
+        </div>
+        <div id="partialSection" style="display: none;">
+            <div class="section-title">PARTIAL MATCH <span id="partialCount">0</span></div>
+            <div class="game-grid" id="partialGrid"></div>
+        </div>
+        <div id="defaultSection">
+            <div class="section-title">ALL TITLES <span id="defaultCount">0</span></div>
+            <div class="game-grid" id="defaultGrid"></div>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 SPOTLIGHT UNIVERSE. Computer Science Front-End Project.
+    </footer>
+
+    <div class="modal-overlay" id="modalOverlay" onclick="closeGameModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-img" id="m-img"></div>
+            <h2 id="m-title">TITLE</h2>
+            <p class="modal-desc" id="m-desc">DESCRIPTION</p>
+            <div class="info-grid">
+                <div class="info-item"><span>PRICE</span><span id="m-price">-</span></div>
+                <div class="info-item"><span>CATEGORY</span><span id="m-category">-</span></div>
+                <div class="info-item"><span>RELEASE DATE</span><span id="m-date">-</span></div>
+                <div class="info-item"><span>MULTIPLAYER</span><span id="m-multi">-</span></div>
+                <div class="info-item" style="grid-column: span 2;"><span>PLATFORM & SPECS</span><span id="m-specs">-</span></div>
+            </div>
+            <button class="close-btn" onclick="hideModal()">닫기</button>
+        </div>
+    </div>
+
+    <script>
+        const gamesData = [
+            { name: "발로란트", price: "무료", category: "FPS/슈팅", date: "2020.06.02", specs: "Intel Core i3-4150 / GT 730", multi: "가능", platform: "PC", desc: "정밀한 사격 실력과 캐릭터별 고유 스킬을 조합하여 싸우는 5v5 전술 슈팅 게임입니다.", tags: ["라이엇", "riot", "fps", "슈팅", "5v5", "전술", "멀티"] },
+            { name: "롤 (리그 오브 레전드)", price: "무료", category: "액션/RPG", date: "2009.10.27", specs: "Intel Core i3-530 / Intel HD 4600", multi: "가능", platform: "PC", desc: "라이벌 팀을 무너뜨리기 위해 전략적인 플레이를 펼치는 세계적인 MOBA 게임입니다.", tags: ["라이엇", "riot", "lol", "moba", "전략", "멀티"] },
+            { name: "배틀그라운드", price: "무료", category: "FPS/슈팅", date: "2017.12.21", specs: "Intel Core i5-4430 / GTX 960", multi: "가능", platform: "PC / 콘솔", desc: "고유한 전장에서 마지막 1인 혹은 1팀만 살아남는 배틀로얄 게임입니다.", tags: ["배그", "pubg", "fps", "슈팅", "생존", "배틀로얄", "스팀", "멀티"] },
+            { name: "폴가이즈", price: "무료", category: "캐주얼/기타", date: "2020.08.04", specs: "Intel Core i5 / GTX 660", multi: "가능", platform: "PC / 콘솔", desc: "최후의 승자가 나올 때까지 우스꽝스러운 장애물 코스를 질주하는 파티 게임입니다.", tags: ["에픽게임즈", "epic", "파티", "캐주얼", "레이싱", "멀티", "무료"] },
+            { name: "위쳐 3", price: "₩ 34,800", category: "액션/RPG", date: "2015.05.19", specs: "Intel Core i5-2500K / GTX 660", multi: "불가능", platform: "PC / 콘솔", desc: "괴물 전문 사냥꾼 게롤트가 되어 광활한 판타지 세계를 탐험하는 명작 RPG입니다.", tags: ["cdpr", "rpg", "오픈월드", "싱글", "판타지", "명작", "스팀"] },
+            { name: "호그와트 레거시", price: "₩ 68,800", category: "액션/RPG", date: "2023.02.11", specs: "Intel Core i5-6600K / GTX 960", multi: "불가능", platform: "PC / 콘솔", desc: "1800년대 호그와트를 배경으로 마법 세계의 운명을 탐험하는 오픈월드 액션 RPG입니다.", tags: ["해리포터", "마법", "오픈월드", "rpg", "싱글", "판타지", "스팀"] },
+            { name: "레디오어낫", price: "₩ 43,000", category: "FPS/슈팅", date: "2023.12.14", specs: "Intel Core i5-4460 / GTX 960", multi: "가능", platform: "PC", desc: "현대 SWAT 특수부대의 시점을 다룬 매우 현실적이고 전술적인 슈팅 게임입니다.", tags: ["swat", "fps", "전술", "슈팅", "밀리터리", "스팀", "멀티"] },
+            { name: "GTA 5", price: "₩ 33,000", category: "오픈월드/생존", date: "2015.04.14", specs: "Intel Core 2 Quad Q6600 / 9800 GT", multi: "가능", platform: "PC / 콘솔", desc: "세 명의 범죄자가 대도시 로스 산토스에서 한탕을 위해 펼치는 오픈월드 액션 게임입니다.", tags: ["락스타", "rockstar", "오픈월드", "범죄", "액션", "멀티", "gta", "스팀"] },
+            { name: "사이버펑크 2077", price: "₩ 66,000", category: "오픈월드/생존", date: "2020.12.10", specs: "Intel Core i7-6700 / GTX 1060", multi: "불가능", platform: "PC / 콘솔", desc: "권력과 신체 개조에 집착하는 미래 메가로폴리스를 배경으로 삼은 오픈월드 RPG입니다.", tags: ["cdpr", "사펑", "오픈월드", "rpg", "싱글", "스팀"] },
+            { name: "마인크래프트", price: "₩ 30,000", category: "오픈월드/생존", date: "2011.11.18", specs: "Intel Core i3-3210 / Intel HD 4000", multi: "가능", platform: "PC / 모바일 / 콘솔", desc: "네모난 블록으로 이루어진 무한한 세계에서 건축, 서바이벌 등 상상하는 모든 것을 구현하는 샌드박스 게임입니다.", tags: ["마크", "mojang", "샌드박스", "생존", "건축", "멀티", "모바일"] },
+            { name: "카트라이더 드리프트", price: "무료", category: "캐주얼/기타", date: "2023.01.12", specs: "Intel Core i5-4460 / GTX 760", multi: "가능", platform: "PC / 콘솔 / 모바일", desc: "클래식 카트라이더 IP를 계승하여 즐기는 캐주얼 레이싱 게임입니다.", tags: ["넥슨", "nexon", "레이싱", "카트", "캐주얼", "멀티", "모바일"] },
+            { name: "포르자 호라이즌 6", price: "₩ 79,900", category: "캐주얼/기타", date: "2025.11.15", specs: "Intel Core i5-8400 / GTX 1070", multi: "가능", platform: "PC / 콘솔", desc: "실사 그래픽을 자랑하며 전 세계 명차들을 타고 누비는 레이싱 게임입니다.", tags: ["마이크로소프트", "레이싱", "자동차", "오픈월드", "실사", "멀티", "스팀"] },
+            { name: "레드 데드 리뎀션 2", price: "₩ 66,000", category: "오픈월드/생존", date: "2018.10.26", specs: "Intel Core i5-2500K / GTX 770", multi: "가능", platform: "PC / 콘솔", desc: "서부 개척 시대의 종말을 배경으로 무법자들의 처절한 생존을 그린 대서사시입니다.", tags: ["락스타", "rockstar", "서부", "오픈월드", "명작", "스토리", "싱글", "스팀"] },
+            { name: "엘든 링", price: "₩ 64,800", category: "액션/RPG", date: "2022.02.25", specs: "Intel Core i5-8400 / GTX 1060", multi: "가능", platform: "PC / 콘솔", desc: "다크 판타지 세계관과 높은 난이도를 결합한 오픈월드 하드코어 액션 RPG입니다.", tags: ["프롬", "fromsoftware", "소울류", "하드코어", "rpg", "오픈월드", "고난도", "스팀", "멀티"] },
+            { name: "데이즈 곤", price: "₩ 52,800", category: "액션/RPG", date: "2021.05.18", specs: "Intel Core i5-2500K / GTX 780", multi: "불가능", platform: "PC / 콘솔", desc: "아포칼립스 세계관에서 바이크를 타고 좀비 떼에 맞서 생존하는 액션 어드벤처입니다.", tags: ["좀비", "오픈월드", "생존", "액션", "소니", "싱글", "스팀"] },
+            { name: "문명 6", price: "₩ 65,000", category: "캐주얼/기타", date: "2016.10.21", specs: "Intel Core i3 2.5Ghz / GTX 450", multi: "가능", platform: "PC / 모바일 / 콘솔", desc: "자신만의 문명을 건설하고 세계를 정복하는 고중독성 턴제 전략 게임입니다.", tags: ["전략", "턴제", "문명", "역사", "멀티", "모바일"] },
+            { name: "세키로", price: "₩ 59,800", category: "액션/RPG", date: "2019.03.22", specs: "Intel Core i3-2100 / GTX 760", multi: "불가능", platform: "PC / 콘솔", desc: "정교한 칼싸움 공방 중심의 하드코어 닌자 액션 게임입니다.", tags: ["프롬", "닌자", "소울류", "액션", "패링", "고난도", "싱글", "스팀"] },
+            { name: "다크 소울 3", price: "₩ 49,800", category: "액션/RPG", date: "2016.04.12", specs: "Intel Core i3-2100 / GTX 750 Ti", multi: "가능", platform: "PC / 콘솔", desc: "절망적인 난이도의 강적들을 파해하는 소울류 액션 RPG의 원조격 작품입니다.", tags: ["프롬", "소울류", "rpg", "하드코어", "고난도", "멀티", "스팀"] },
+            { name: "바이오하자드 RE2", price: "₩ 29,000", category: "액션/RPG", date: "2019.01.25", specs: "Intel Core i5-4460 / GTX 760", multi: "불가능", platform: "PC / 콘솔", desc: "좀비 바이러스로 파멸한 도시에서 생존을 위해 사투를 벌이는 호러 명작입니다.", tags: ["캡콤", "capcom", "호러", "공포", "좀비", "생존", "싱글"] },
+            { name: "툼 레이더 리부트", price: "₩ 23,200", category: "액션/RPG", date: "2013.03.05", specs: "Intel Core 2 Duo E6300 / Radeon HD 4350", multi: "불가능", platform: "PC / 콘솔", desc: "라라 크로프트가 무인도에 표류하여 생존 전문가로 거듭나는 과정을 그린 액션 대작입니다.", tags: ["어드벤처", "액션", "퍼즐", "싱글", "스팀"] },
+            { name: "스파이더맨 리마스터", price: "₩ 58,800", category: "액션/RPG", date: "2022.08.13", specs: "Intel Core i3-4160 / GTX 950", multi: "불가능", platform: "PC / 콘솔", desc: "뉴욕 도심 빌딩 숲을 화려한 웹 스윙으로 누비며 범죄 조직에 맞서 싸우는 액션 게임입니다.", tags: ["소니", "sony", "히어로", "액션", "오픈월드", "싱글"] },
+            { name: "다잉 라이트", price: "₩ 33,000", category: "액션/RPG", date: "2015.01.27", specs: "Intel Core i5-2500 / GTX 560", multi: "가능", platform: "PC / 콘솔", desc: "화려한 파쿠르 액션으로 좀비들을 피해 밤낮으로 생존하는 서바이벌 게임입니다.", tags: ["좀비", "파쿠르", "생존", "오픈월드", "액션", "coop", "멀티", "스팀"] },
+            { name: "더 포레스트", price: "₩ 20,500", category: "오픈월드/생존", date: "2018.05.01", specs: "Intel Core 2 Duo E2200 / GeForce 8800 GT", multi: "가능", platform: "PC / 콘솔", desc: "무인도에 추락하여 변종 식인종들의 습격에 맞서 집을 짓고 생존하는 호러 게임입니다.", tags: ["생존", "공포", "건축", "멀티", "스팀"] },
+            { name: "스타듀 밸리", price: "₩ 16,000", category: "캐주얼/기타", date: "2016.02.27", specs: "2.0 GHz Processor / 256MB VRAM", multi: "가능", platform: "PC / 모바일 / 콘솔", desc: "낡은 농장을 일구며 마을 주민들과 소통하는 힐링 농경 시뮬레이션입니다.", tags: ["농사", "힐링", "도트", "캐주얼", "멀티", "모바일", "스팀"] },
+            { name: "테라리아", price: "₩ 10,500", category: "오픈월드/생존", date: "2011.05.17", specs: "2.0 GHz Processor / 128MB VRAM", multi: "가능", platform: "PC / 모바일 / 콘솔", desc: "무한한 가능성을 지닌 2D 액션 샌드박스 월드에서 탐험하고 보스를 사냥하는 게임입니다.", tags: ["2d", "마크", "샌드박스", "생존", "도트", "멀티", "스팀"] },
+            { name: "모여봐요 동물의 숲", price: "₩ 64,800", category: "캐주얼/기타", date: "2020.03.20", specs: "Nintendo Switch 전용 사양", multi: "가능", platform: "콘솔", desc: "무인도에서 동물 이웃들과 유유자적한 라이프를 즐기는 닌텐도 힐링 게임입니다.", tags: ["닌텐도", "nintendo", "힐링", "캐주얼", "멀티"] },
+            { name: "잇 테이크 스투", price: "₩ 44,000", category: "캐주얼/기타", date: "2021.03.26", specs: "Intel Core i3-2100T / GTX 660", multi: "가능 (2인)", platform: "PC / 콘솔", desc: "부부가 협동하여 마법 공간을 헤쳐나가는 2인 전용 역대급 협동 플랫폼 게임입니다.", tags: ["2인", "협동", "coop", "액션", "멀티", "스팀"] },
+            { name: "뱀파이어 서바이벌", price: "₩ 5,000", category: "캐주얼/기타", date: "2022.10.20", specs: "Intel Core CPU / 내장 그래픽 호환", multi: "가능", platform: "PC / 모바일 / 콘솔", desc: "화면을 가득 채우는 수천 마리의 괴물을 학살하는 고중독성 로그라이크 서바이벌입니다.", tags: ["로그라이크", "도트", "중독성", "싱글", "모바일", "스팀"] },
+            { name: "할로우 나이트", price: "₩ 16,000", category: "캐주얼/기타", date: "2017.02.25", specs: "Intel Core 2 Duo / GeForce 9800 GTX", multi: "불가능", platform: "PC / 콘솔", desc: "곤충들의 고대 지하 왕국을 탐험하는 아름다운 메트로이드바니아 액션 명작입니다.", tags: ["메트로이드바니아", "2d", "소울류", "고난도", "싱글", "스팀"] },
+            { name: "카운터 스트라이크 2", price: "무료", category: "FPS/슈팅", date: "2023.09.28", specs: "Intel Core i5 7500 / GTX 1060", multi: "가능", platform: "PC", desc: "전 세계 슈팅 게임 시장을 이끌어온 정통 5v5 FPS 밀리터리 게임입니다.", tags: ["밸브", "valve", "fps", "정통", "슈팅", "멀티", "스팀"] },
+            { name: "오버워치 2", price: "무료", category: "FPS/슈팅", date: "2016.05.24", specs: "Intel Core i3 / GTX 600", multi: "가능", platform: "PC / 콘솔", desc: "개성 넘치는 능력을 가진 영웅들을 선택하여 팀 단위로 난투를 벌이는 하이퍼 슈팅 게임입니다.", tags: ["블리자드", "blizzard", "옵치", "fps", "멀티"] },
+            { name: "로블록스", price: "무료", category: "캐주얼/기타", date: "2006.09.01", specs: "시스템 저사양 구동 가능", multi: "가능", platform: "PC / 모바일 / 콘솔", desc: "유저들이 다양한 테마의 컨텐츠를 직접 제작하고 공유해 즐기는 글로벌 메타버스 플랫폼입니다.", tags: ["roblox", "메타버스", "샌드박스", "플랫폼", "멀티", "모바일"] },
+            { name: "포트나이트", price: "무료", category: "FPS/슈팅", date: "2017.07.25", specs: "Intel Core i3-3225 / Intel HD 4000", multi: "가능", platform: "PC / 콘솔 / 모바일", desc: "자원을 채집하여 벽과 계단을 건설하는 메커니즘이 결합된 글로벌 흥행 배틀로얄 게임입니다.", tags: ["에픽게임즈", "epic", "배틀로얄", "건축", "fps", "멀티", "모바일"] },
+            { name: "브롤스타즈", price: "무료", category: "캐주얼/기타", date: "2018.12.12", specs: "모바일 표준 환경 사양", multi: "가능", platform: "모바일", desc: "모바일 환경에 최적화되어 실시간으로 짧고 강렬하게 펼쳐지는 3v3 아케이드 대전 슈팅입니다.", tags: ["슈퍼셀", "supercell", "모바일", "슈팅", "캐주얼", "멀티"] },
+            { name: "피파온라인 4 (FC 온라인)", price: "무료", category: "캐주얼/기타", date: "2018.05.17", specs: "Intel Core i3-2100 / GeForce GT 730", multi: "가능", platform: "PC", desc: "방대한 라이선스를 바탕으로 자신만의 드림팀을 구성하여 겨루는 축구 스포츠 온라인 게임입니다.", tags: ["넥슨", "nexon", "축구", "스포츠", "멀티"] },
+            { name: "냥코 대전쟁", price: "무료", category: "캐주얼/기타", date: "2014.06.27", specs: "모바일 표준 환경 사양", multi: "불가능", platform: "모바일", desc: "징그럽고 귀여운 고양이 군단을 생산하여 전 세계 성들을 정복하는 캐주얼 디펜스 게임입니다.", tags: ["모바일", "디펜스", "전략", "싱글"] },
+            { name: "무한의 계단", price: "무료", category: "캐주얼/기타", date: "2015.01.19", specs: "모바일 표준 환경 사양", multi: "가능", platform: "모바일", desc: "두 개의 버튼으로 타이밍에 맞춰 계단을 무한히 높이 올라가는 극강의 중독성 아케이드 게임입니다.", tags: ["아케이드", "모바일", "멀티"] },
+            { name: "좀비고등학교", price: "무료", category: "액션/RPG", date: "2014.03.26", specs: "모바일 표준 환경 사양", multi: "가능", platform: "모바일", desc: "좀비가 창궐한 고등학교 안에서 유저들과 협동하거나 대결하는 액션 게임입니다.", tags: ["모바일", "액션", "멀티", "좀비"] },
+            { name: "펠월드 (Palworld)", price: "₩ 32,000", category: "오픈월드/생존", date: "2024.01.19", specs: "Intel Core i5-3570K / GTX 1050", multi: "가능", platform: "PC / 콘솔", desc: "신비한 생명체 '펠'과 함께 생존, 건축, 공장 가동을 함께하는 서바이벌 오픈월드입니다.", tags: ["스팀", "멀티", "오픈월드", "생존", "coop"] },
+            { name: "몬스터 헌터 월드", price: "₩ 34,800", category: "액션/RPG", date: "2018.08.10", specs: "Intel Core i5-4460 / GTX 760", multi: "가능", platform: "PC / 콘솔", desc: "거대한 괴수들을 정교한 액션으로 추적하고 사냥하는 본격 수렵 RPG입니다.", tags: ["캡콤", "capcom", "스팀", "멀티", "rpg", "coop", "고난도"] },
+            { name: "로스트아크", price: "무료", category: "액션/RPG", date: "2018.12.12", specs: "Intel Core i3 / GTX 1050", multi: "가능", platform: "PC", desc: "화려한 가디언 레이드와 핵앤슬래시 전투를 즐기는 국내 최고 사양 MMORPG입니다.", tags: ["rpg", "멀티", "전략"] },
+            { name: "에이펙스 레전드", price: "무료", category: "FPS/슈팅", date: "2019.02.05", specs: "Intel Core i3-6300 / HD 7730", multi: "가능", platform: "PC / 콘솔", desc: "고속 기동 스킬을 보유한 캐릭터들이 팀을 이루어 교전하는 배틀로얄 슈팅 게임입니다.", tags: ["스팀", "멀티", "fps", "슈팅", "배틀로얄"] },
+            { name: "서브나우티카", price: "₩ 34,900", category: "오픈월드/생존", date: "2018.01.23", specs: "Intel Haswell 4 Cores / GTX 550 Ti", multi: "불가능", platform: "PC / 콘솔", desc: "외계 행성의 깊고 신비로운 해저 세계에 조난당한 주인공의 해양 생존 명작입니다.", tags: ["스팀", "싱글", "오픈월드", "생존", "공포"] },
+            { name: "리탈 컴퍼니", price: "₩ 11,000", category: "오픈월드/생존", date: "2023.10.24", specs: "Intel Core i5-7400 / GTX 1050", multi: "가능", platform: "PC", desc: "외계 기지들을 탐험하며 괴물을 피해 할당량의 고철을 수집하는 협동 공포 게임입니다.", tags: ["스팀", "멀티", "coop", "공포", "생존"] },
+            { name: "원신", price: "무료", category: "액션/RPG", date: "2020.09.28", specs: "Intel Core i5 / GTX 1030", multi: "가능", platform: "PC / 모바일 / 콘솔", desc: "7가지 원소의 오픈월드 대륙을 무대로 모험을 펼치는 판타지 어드벤처 RPG입니다.", tags: ["오픈월드", "rpg", "모바일", "싱글", "멀티"] },
+            { name: "산나비 (SANABI)", price: "₩ 15,500", category: "액션/RPG", date: "2023.11.09", specs: "Intel Core i3 / GTX 1050", multi: "불가능", platform: "PC / 콘솔", desc: "사슬 갈고리 파크루 액션과 엄청난 스토리 반전의 여운을 주는 국산 웰메이드 도트 액션입니다.", tags: ["네오위즈", "스팀", "싱글", "도트", "액션", "스토리"] },
+            { name: "포탈 2", price: "₩ 11,000", category: "캐주얼/기타", date: "2011.04.19", specs: "Intel Dual Core 2.0 / GeForce 7600", multi: "가능", platform: "PC / 콘솔", desc: "공간을 연결하는 포탈건을 쏘아 실험실을 헤쳐나가는 세기의 명작 퍼즐 게임입니다.", tags: ["밸브", "valve", "스팀", "싱글", "멀티", "2인", "coop", "퍼즐", "명작"] },
+            { name: "스트리트 파이터 6", price: "₩ 72,400", category: "캐주얼/기타", date: "2023.06.02", specs: "Intel Core i5-7500 / GTX 1060", multi: "가능", platform: "PC / 콘솔", desc: "모던 조작 시스템을 전격 도입하여 진입장벽을 허문 정통 대전 격투의 최신작입니다.", tags: ["캡콤", "capcom", "스팀", "멀티", "격투", "캐주얼"] },
+            { name: "헬다이버즈 2", price: "₩ 44,800", category: "FPS/슈팅", date: "2024.02.08", specs: "Intel Core i7-4790K / GTX 1050 Ti", multi: "가능", platform: "PC / 콘솔", desc: "은하계 통치와 은하의 은혜를 위해 외계 침략자들에 맞서 싸우는 화끈한 협동 슈팅 게임입니다.", tags: ["소니", "sony", "스팀", "멀티", "coop", "fps", "슈팅"] },
+            { name: "쿠키런 킹덤", price: "무료", category: "캐주얼/기타", date: "2021.01.21", specs: "모바일 표준 사양", multi: "가능", platform: "모바일", desc: "귀여운 쿠키들을 육성해 전투하고 나만의 왕국을 예쁘게 건설하는 SNG RPG 게임입니다.", tags: ["데브시스터즈", "모바일", "싱글", "전략", "캐주얼", "힐링"] },
+            { name: "레프트 4 데드 2", price: "₩ 11,000", category: "FPS/슈팅", date: "2009.11.17", specs: "Intel Pentium 4 / AMD Athlon", multi: "가능", platform: "PC", desc: "4명의 생존자가 힘을 합쳐 좀비 아포칼립스 도시를 탈출하는 원조 협동 슈팅의 전설입니다.", tags: ["밸브", "valve", "fps", "좀비", "멀티", "coop", "스팀"] },
+            { name: "레인보우 식스 시즈", price: "₩ 22,000", category: "FPS/슈팅", date: "2015.12.01", specs: "Intel Core i3 / GTX 460", multi: "가능", platform: "PC / 콘솔", desc: "벽을 부수고 전술 장비를 활용해 대테러 진압 공방전을 펼치는 하드코어 슈팅 게임입니다.", tags: ["유비소프트", "fps", "슈팅", "전술", "멀티", "스팀", "고난도"] },
+            { name: "하데스 (Hades)", price: "₩ 32,000", category: "액션/RPG", date: "2020.09.17", specs: "Dual Core 2.4Ghz / 1GB VRAM", multi: "불가능", platform: "PC / 콘솔", desc: "자신만의 카드 덱을 유기적으로 조합하여 탑의 층수를 올려나가는 덱빌딩 로그라이크의 교과서입니다.", tags: ["로그라이크", "액션", "rpg", "싱글", "스팀"] },
+            { name: "디아블로 4", price: "₩ 62,400", category: "액션/RPG", date: "2023.06.06", specs: "Intel Core i5-2500K / GTX 660", multi: "가능", platform: "PC / 콘솔", desc: "성역의 창조주 릴리트의 부활과 함께 펼쳐지는 어두운 다크 판타지 핵앤슬래시 액션 RPG입니다.", tags: ["블리자드", "blizzard", "rpg", "핵앤슬래시", "멀티"] },
+            { name: "메이플스토리", price: "무료", category: "액션/RPG", date: "2003.04.29", specs: "Intel Core i3 / 단독 내장그래픽 호환", multi: "가능", platform: "PC", desc: "아기자기한 2D 도트 횡스크롤 월드에서 모험가들을 키워나가는 한국 RPG의 살아있는 역사입니다.", tags: ["넥슨", "nexon", "rpg", "도트", "2d", "멀티"] },
+            { name: "던전앤파이터", price: "무료", category: "액션/RPG", date: "2005.08.10", specs: "Intel Core2 Duo / 내장그래픽 구동", multi: "가능", platform: "PC", desc: "화려한 콤보와 오락실 감성의 벨트스크롤 액션을 온라인으로 이식한 초고속 액션 RPG입니다.", tags: ["넥슨", "nexon", "액션", "rpg", "도트", "2d", "멀티"] },
+            { name: "서든어택", price: "무료", category: "FPS/슈팅", date: "2005.08.23", specs: "Intel Core E8400 / 내장그래픽", multi: "가능", platform: "PC", desc: "국내 온라인 FPS의 대중화를 이끈 가볍고 빠른 템포의 정통 캐주얼 슈팅 게임입니다.", tags: ["넥슨", "nexon", "fps", "슈팅", "정통", "멀티"] },
+            { name: "러스트 (Rust)", price: "₩ 46,000", category: "오픈월드/생존", date: "2018.02.09", specs: "Intel Core i7-3770 / GTX 670", multi: "가능", platform: "PC / 콘솔", desc: "맨몸으로 태어나 돌과 나무를 캐고 총기를 제작해 다른 유저의 기지를 약탈하는 생존 서바이벌입니다.", tags: ["오픈월드", "생존", "하드코어", "멀티", "스팀", "고난도"] },
+            { name: "아크 서바이벌", price: "₩ 16,500", category: "오픈월드/생존", date: "2017.08.29", specs: "Intel Core i5-2400 / GTX 670", multi: "가능", platform: "PC / 콘솔 / 모바일", desc: "고대 공룡들이 살아 숨 쉬는 섬에서 공룡들을 조종하고 기지를 건설해 생존하는 SF 서바이벌입니다.", tags: ["오픈월드", "생존", "공룡", "멀티", "스팀"] },
+            { name: "프로젝트 좀보이드", price: "₩ 21,500", category: "오픈월드/생존", date: "2013.11.08", specs: "Intel Quad Core 2.7Ghz / 2GB VRAM", multi: "가능", platform: "PC", desc: "현존하는 가장 현실적이고 절망적인 시스템을 구현한 쿼터뷰 헬난이도 좀비 서바이벌 게임입니다.", tags: ["좀비", "생존", "하드코어", "오픈월드", "스팀", "멀티", "고난도"] },
+            { name: "발헤임 (Valheim)", price: "₩ 22,000", category: "오픈월드/생존", date: "2021.02.02", specs: "Intel Dual Core 2.6Ghz / GTX 950", multi: "가능", platform: "PC / 콘솔", desc: "바이킹 신화를 배경으로 북유럽풍 광활한 숲과 바다를 탐험하며 신들을 사냥하는 오픈월드 협동 생존작입니다.", tags: ["오픈월드", "생존", "건축", "coop", "멀티", "스팀"] },
+            { name: "래프트 (Raft)", price: "₩ 21,000", category: "오픈월드/생존", date: "2018.05.24", specs: "Intel Core i5 / GTX 750", multi: "가능", platform: "PC", desc: "망망대해 위에 떠 있는 작은 뗏목 하나로 시작해 쓰레기를 인양하며 생존하는 작입니다.", tags: ["생존", "오픈월드", "건축", "coop", "멀티", "스팀"] },
+            { name: "돈스타브 투게더", price: "₩ 15,500", category: "오픈월드/생존", date: "2016.04.22", specs: "Intel Dual Core 1.7Ghz / 내장그래픽", multi: "가능", platform: "PC / 콘솔", desc: "기괴하고 독특한 그림체 스타일 속에서 굶어 죽지 않기 위해 자원을 모으고 괴물에 맞서는 생존 게임입니다.", tags: ["생존", "공포", "coop", "멀티", "스팀"] },
+            { name: "어몽 어스 (Among Us)", price: "₩ 5,500", category: "캐주얼/기타", date: "2018.06.16", specs: "시스템 저사양 완전 호환", multi: "가능", platform: "PC / 모바일 / 콘솔", desc: "우주선 내부의 배신자 마피아를 찾아내기 위해 크루원들이 미션을 완수하고 추리하는 국민 파티 게임입니다.", tags: ["파티", "캐주얼", "추리", "멀티", "모바일", "스팀"] },
+            { name: "오버쿡! 2", price: "₩ 26,000", category: "캐주얼/기타", date: "2018.08.08", specs: "Intel Core i3 / GTX 630", multi: "가능", platform: "PC / 콘솔", desc: "움직이는 주방, 불타는 조리대 위에서 동료들과 소리를 지르며 요리를 완성해 나가는 협동 아케이드입니다.", tags: ["파티", "캐주얼", "coop", "2인", "멀티", "스팀"] },
+            { name: "슬레이 더 스파이어", price: "₩ 26,000", category: "캐주얼/기타", date: "2019.01.23", specs: "1.0 GHz Processor / 내장 그래픽", multi: "불가능", platform: "PC / 모바일 / 콘솔", desc: "지옥의 군주 하데스의 아들이 되어 지하세계를 탈출하는 초고화질 액션 로그라이크 명작입니다.", tags: ["로그라이크", "전략", "싱글", "모바일", "스팀"] },
+            { name: "디제이맥스 리스펙트 V", price: "₩ 49,800", category: "캐주얼/기타", date: "2020.03.12", specs: "Intel Core i3 / GTX 460", multi: "가능", platform: "PC / 콘솔", desc: "최고의 퀄리티를 자랑하는 비주얼 일러스트와 명곡 노트를 연주하는 국산 탑클래스 리듬 게임입니다.", tags: ["네오위즈", "리듬", "캐주얼", "멀티", "스팀", "고난도"] },
+            { name: "림월드 (RimWorld)", price: "₩ 37,500", category: "캐주얼/기타", date: "2018.10.17", specs: "Core 2 Duo / 내장 그래픽", multi: "불가능", platform: "PC / 콘솔", desc: "외계 행성에 불시착한 정착민들을 지휘하여 인공지능 스토리텔러가 부여하는 사건들을 극복하는 시뮬레이션입니다.", tags: ["샌드박스", "전략", "생존", "싱글", "스팀"] },
+            { name: "시티즈 스카이라인", price: "₩ 32,000", category: "캐주얼/기타", date: "2015.03.10", specs: "Intel Core i3 / GTX 260", multi: "불가능", platform: "PC / 콘솔", desc: "도로망 배치부터 구역 설정, 대중교통 최적화까지 완벽한 대도시를 건설하는 경영 시뮬레이션입니다.", tags: ["건축", "전략", "도시", "싱글", "스팀"] },
+            { name: "유로 트럭 시뮬레이터 2", price: "₩ 24,800", category: "캐주얼/기타", date: "2012.10.19", specs: "Intel Dual Core 2.4Ghz / GTS 450", multi: "가능", platform: "PC", desc: "광활하고 아름다운 유럽 대륙의 고속도로를 대형 트럭을 운전하며 화물을 배송하는 본격 힐링 운전작입니다.", tags: ["레이싱", "자동차", "힐링", "멀티", "스팀"] },
+            { name: "구스구스덕 (덕몽어스)", price: "무료", category: "캐주얼/기타", date: "2021.10.04", specs: "Intel Core i3 / 내장 그래픽", multi: "가능", platform: "PC / 모바일", desc: "귀여운 거위 무리 속에 숨어든 오리(살인마)를 음성 채팅으로 찾아내는 대규모 마피아 파티 게임입니다.", tags: ["파티", "캐주얼", "추리", "멀티", "모바일", "스팀"] },
+            { name: "붕괴 스타레일", price: "무료", category: "액션/RPG", date: "2023.04.26", specs: "Intel Core i3 / GTX 650", multi: "불가능", platform: "PC / 모바일 / 콘솔", desc: "은하 열차를 타고 우주를 누비며 화려한 필살기 연출을 즐기는 프리미엄 턴제 전략 RPG입니다.", tags: ["호요버스", "hoyoverse", "rpg", "전략", "턴제", "모바일", "싱글"] },
+            { name: "블루 아카이브", price: "무료", category: "캐주얼/기타", date: "2021.02.04", specs: "모바일 표준 사양", multi: "불가능", platform: "모바일", desc: "학원 도시 키보토스의 선생님이 되어 귀여운 학생들과 사건을 해결해 나가는 서브컬처 전략 SNG입니다.", tags: ["넥슨", "nexon", "모바일", "전략", "서브컬처", "싱글"] },
+            { name: "팀 포트리스 2", price: "무료", category: "FPS/슈팅", date: "2007.10.10", specs: "1.7 GHz Processor / 내장그래픽 호환", multi: "가능", platform: "PC", desc: "병과별 독특한 개성을 가진 캐릭터들이 팀을 나눠 점령전을 펼치는 하이퍼 팀 슈팅의 대부입니다.", tags: ["밸브", "valve", "fps", "슈팅", "멀티", "스팀"] },
+            { name: "데스티니 가디언즈", price: "무료", category: "FPS/슈팅", date: "2017.09.06", specs: "Intel Core i3 / GTX 660", multi: "가능", platform: "PC / 콘솔", desc: "광활한 태양계를 무대로 외계 세력에 맞서 장비를 파밍하고 레이드를 뛰는 SF MMO FPS 게임입니다.", tags: ["fps", "슈팅", "rpg", "멀티", "스팀"] },
+            { name: "둠 이터널 (Doom Eternal)", price: "₩ 44,000", category: "FPS/슈팅", date: "2020.03.20", specs: "Intel Core i5 / GTX 1060", multi: "가능", platform: "PC / 콘솔", desc: "지옥에서 올라온 악마 군단들을 강력한 화력과 전기톱으로 무자비하게 찢고 발기는 초고속 하이퍼 액션 슈팅입니다.", tags: ["fps", "슈팅", "액션", "싱글", "하드코어", "스팀"] },
+            { name: "페이데이 2", price: "₩ 11,500", category: "FPS/슈팅", date: "2013.08.13", specs: "2.0 GHz Processor / GTX 260", multi: "가능", platform: "PC / 콘솔", desc: "4명의 무장 강도가 되어 치밀한 계획을 세우고 은행을 털어 탈출하는 본격 범죄 협동 FPS입니다.", tags: ["fps", "슈팅", "범죄", "coop", "멀티", "스팀"] },
+            { name: "이스케이프 프롬 타르코프", price: "₩ 65,000", category: "FPS/슈팅", date: "2017.07.27", specs: "Intel Core i5 / GTX 960", multi: "가능", platform: "PC", desc: "무법지대가 된 도시 타르코프에 진입해 아이템을 파밍하고 살아서 탈출해야 하는 하드코어 밀리터리 생존작입니다.", tags: ["fps", "슈팅", "생존", "하드코어", "밀리터리", "멀티", "고난도"] },
+            { name: "타이탄폴 2", price: "₩ 33,000", category: "FPS/슈팅", date: "2016.10.28", specs: "Intel Core i3 / GTX 660", multi: "가능", platform: "PC / 콘솔", desc: "거대 이족보행 로봇 '타이탄'과 파일럿을 번갈아 조종하며 최고의 싱글 캠페인 스토리를 자랑하는 SF 슈팅작입니다.", tags: ["ea", "fps", "슈팅", "액션", "싱글", "스팀"] },
+            { name: "몬스터 헌터 라이즈", price: "₩ 48,400", category: "액션/RPG", date: "2021.03.26", specs: "Intel Core i3 / GT 1030", multi: "가능", platform: "PC / 콘솔", desc: "밧줄벌레를 이용한 고속 공중 기동 액션을 도입해 캐주얼한 쾌감을 가미한 최신형 몬스터 수렵 RPG입니다.", tags: ["캡콤", "capcom", "rpg", "액션", "coop", "멀티", "스팀"] },
+            { name: "엘더스크롤 5 스카이림", price: "₩ 44,000", category: "오픈월드/생존", date: "2011.11.11", specs: "Intel Dual Core / 내장 그래픽 이상", multi: "불가능", platform: "PC / 콘솔", desc: "드래곤의 영혼을 흡수하는 구원자 '도바킨'이 되어 무한에 가까운 높은 자유도의 판타지 대륙을 경험하는 RPG입니다.", tags: ["오픈월드", "rpg", "싱글", "판타지", "명작", "스팀"] },
+            { name: "블러드본 (Bloodborne)", price: "₩ 22,800", category: "액션/RPG", date: "2015.03.24", specs: "PlayStation 4 독점 구동 스펙", multi: "가능", platform: "콘솔", desc: "저주받은 야수들의 도시 야남에서 리턴이 없는 스피디한 피격 공방을 펼치는 고품격 소울류 하드코어 명작입니다.", tags: ["프롬", "fromsoftware", "소울류", "하드코어", "고난도", "공포", "싱글", "콘솔"] },
+            { name: "P의 거짓 (Lies of P)", price: "₩ 64,800", category: "액션/RPG", date: "2023.09.19", specs: "Intel Core i3 / GTX 960", multi: "불가능", platform: "PC / 콘솔", desc: "피노키오 잔혹동화를 고화질로 재해석하여 완벽한 타격감을 구현한 자랑스러운 국산 탑 소울류 RPG입니다.", tags: ["네오위즈", "소울류", "하드코어", "rpg", "고난도", "싱글", "스팀"] },
+            { name: "데이브 더 다이버", price: "₩ 24,000", category: "캐주얼/기타", date: "2023.06.28", specs: "Intel Core i3 / GTX 750", multi: "불가능", platform: "PC / 콘솔", desc: "낮에는 신비한 블루홀 바다를 탐사해 물고기를 잡고, 밤에는 초밥집을 운영하는 하이브리드 해양 어드벤처입니다.", tags: ["넥슨", "nexon", "도트", "힐링", "경영", "어드벤처", "싱글", "스팀"] },
+            { name: "페르소나 5 더 로열", price: "₩ 69,800", category: "액션/RPG", date: "2019.10.31", specs: "Intel Core i7-4790 / GTX 760", multi: "불가능", platform: "PC / 콘솔", desc: "낮에는 평범한 고등학생으로 학교생활을 즐기고, 밤에는 괴도단이 되어 악인들의 마음을 훔치는 스타일리시 턴제 RPG입니다.", tags: ["sega", "rpg", "턴제", "애니메이션", "싱글", "스팀"] },
+            { name: "파이널 판타지 14", price: "무료", category: "액션/RPG", date: "2013.08.27", specs: "Intel Core i5 / GTX 750 Ti", multi: "가능", platform: "PC / 콘솔", desc: "방대한 에오르제아 대륙의 영웅이 되어 탄탄한 시나리오 스토리와 레이드를 즐기는 정통 글로벌 MMORPG입니다.", tags: ["스퀘어에닉스", "rpg", "멀티", "스토리"] },
+            { name: "노 맨즈 스카이", price: "₩ 60,000", category: "오픈월드/생존", date: "2016.08.12", specs: "Intel Core i3 / GTX 480", multi: "가능", platform: "PC / 콘솔", desc: "알고리즘에 의해 자동 생성되는 1800경 개의 무한한 우주 행성들을 탐험하고 생존하는 SF 샌드박스입니다.", tags: ["오픈월드", "생존", "SF", "멀티", "스팀"] },
+            { name: "선즈 오브 더 포레스트", price: "₩ 34,000", category: "오픈월드/생존", date: "2024.02.23", specs: "Intel Core i5-8400 / GTX 1060", multi: "가능", platform: "PC", desc: "더 포레스트의 정식 후속작으로 더욱 향상된 그래픽과 똑똑해진 식인종들이 등장하는 리얼 헬 서바이벌 게임입니다.", tags: ["생존", "공포", "오픈월드", "건축", "멀티", "스팀"] },
+            { name: "크레이지 아케이드", price: "무료", category: "캐주얼/기타", date: "2001.10.16", specs: "저사양 PC 완벽 가동", multi: "가능", platform: "PC", desc: "물풍선을 놓아 상대방을 가두고 터뜨려 승리하는 넥슨의 전설적인 국민 장수 캐주얼 아케이드입니다.", tags: ["넥슨", "nexon", "캐주얼", "아케이드", "멀티"] },
+            { name: "테일즈런너", price: "무료", category: "캐주얼/기타", date: "2005.08.01", specs: "Intel Dual Core / 내장그래픽", multi: "가능", platform: "PC", desc: "동화책 속 배경 전장들을 무대로 밟기, 대시, 점프를 활용해 순위를 겨루는 온라인 종스크롤 레이싱 게임입니다.", tags: ["레이싱", "캐주얼", "파티", "멀티"] },
+            { name: "마비노기", price: "무료", category: "액션/RPG", date: "2004.06.22", specs: "Intel Core i3 / 내장 그래픽 구동", multi: "가능", platform: "PC", desc: "캠프파이어에 앉아 악기를 연주하고 양털을 깎는 등 자유로운 판타지 라이프를 모토로 삼은 감성 RPG입니다.", tags: ["넥슨", "nexon", "rpg", "힐링", "멀티"] },
+            { name: "지오메트리 대시", price: "₩ 4,400", category: "캐주얼/기타", date: "2013.08.13", specs: "시스템 저사양 완전 호환", multi: "불가능", platform: "PC / 모바일", desc: "신나는 전자음악 비트에 맞춰 네모 블록 장애물들을 타이밍 점프로 돌파하는 극강의 피지컬 리듬 아케이드입니다.", tags: ["캐주얼", "리듬", "아케이드", "싱글", "모바일", "스팀", "고난도"] },
+            { name: "항아리 게임", price: "₩ 8,500", category: "캐주얼/기타", date: "2017.12.06", specs: "Intel Dual Core 2Ghz / 1GB VRAM", multi: "불가능", platform: "PC / 모바일", desc: "항아리에 들어간 남자가 망치 하나에만 의지해 산을 오르는, 수많은 유저들의 멘탈을 파괴한 기괴한 인디 명작입니다.", tags: ["캐주얼", "하드코어", "인디", "싱글", "스팀", "고난도"] },
+            { name: "ALT F4", price: "₩ 3,300", category: "캐주얼/기타", date: "2021.02.19", specs: "Intel Core i5 / GTX 750 Ti", multi: "불가능", platform: "PC", desc: "함정이 가득한 스테이지를 기사가 되어 돌파하는, 게임 이름처럼 즉시 강제종료를 유발하는 고난도 국산 세이브 불가능 게임입니다.", tags: ["캐주얼", "하드코어", "고난도", "싱글", "스팀"] },
+            { name: "우마무스메 프리티 더비", price: "무료", category: "캐주얼/기타", date: "2021.02.24", specs: "모바일 표준 사양", multi: "가능", platform: "모바일", desc: "실존 경주마들의 이름을 이어받은 캐릭터들을 트레이너가 되어 육성하고 레이스에서 승리하는 고화질 스포츠 육성작입니다.", tags: ["카카오게임즈", "모바일", "서브컬처", "시뮬레이션", "멀티"] },
+            { name: "팩토리오 (Factorio)", price: "₩ 40,000", category: "캐주얼/기타", date: "2020.08.14", specs: "Intel Core Dual 3Ghz / 512MB VRAM", multi: "가능", platform: "PC", desc: "외계 행성에 홀로 떨어져 무한 자동화 자원 채굴 및 물류 공장 벨트 라인을 건설하여 로켓을 쏘아 올리는 게임입니다.", tags: ["샌드박스", "전략", "건축", "싱글", "멀티", "스팀"] },
+            { name: "스타크래프트 리마스터", price: "₩ 16,500", category: "캐주얼/기타", date: "1998.03.31", specs: "Intel Pentium 4 / 내장 그래픽 호환", multi: "가능", platform: "PC", desc: "대한민국 PC방 문화를 정착시킨 전설의 우주 테마 3종족 실시간 RTS 전술 전략 시뮬레이션입니다.", tags: ["블리자드", "blizzard", "전략", "rts", "원조", "멀티"] },
+            { name: "스타크래프트 2", price: "무료", category: "캐주얼/기타", date: "2010.07.27", specs: "Intel Core 2 Duo / GeForce 8800 GTX", multi: "가능", platform: "PC", desc: "짐 레이너와 케리건의 거대한 SF 우주 전쟁 시나리오 스토리 및 e스포츠용 초정밀 RTS 전략 게임입니다.", tags: ["블리자드", "blizzard", "전략", "rts", "SF", "멀티"] },
+            { name: "폴아웃 4", price: "₩ 22,000", category: "오픈월드/생존", date: "2015.11.10", specs: "Intel Core i5 / GTX 550 Ti", multi: "불가능", platform: "PC / 콘솔", desc: "핵전쟁으로 파멸한 웰컴 포스트 아포칼립스 보스턴 황무지에서 생존하며 잃어버린 아들을 찾는 오픈월드 명작입니다.", tags: ["베데스다", "오픈월드", "생존", "rpg", "싱글", "스팀"] },
+            { name: "NBA 2K 모바일", price: "무료", category: "캐주얼/기타", date: "2018.11.19", specs: "모바일 고사양 프로세서 요구", multi: "가능", platform: "모바일", desc: "콘솔급 화려한 그래픽으로 현역 NBA 슈퍼스타들과 전설적인 선수들을 나만의 로스터로 구성해 실시간 농구를 즐기는 모바일 스포츠 게임입니다.", tags: ["2k", "스포츠", "농구", "모바일", "멀티"] },
+            { name: "세븐나이츠 ReBirth", price: "무료", category: "액션/RPG", date: "2026.03.15", specs: "현대 모바일 / PC 구동 스펙", multi: "가능", platform: "PC / 모바일", desc: "기존 세븐나이츠 1의 원작 감성을 언리얼 엔진 5 기반의 완전히 새로운 고화질 그래픽과 세련된 턴제 전투 시스템으로 재탄생시킨 정통 계승 신작 RPG입니다.", tags: ["넷마블", "rpg", "턴제", "서브컬처", "멀티", "모바일"] }
+        ];
+
+        const tagGroupsData = {
+            "개발사 / 메인 스튜디오": ["라이엇", "넥슨", "프롬", "락스타", "캡콤", "밸브", "블리자드", "네오위즈", "호요버스"],
+            "플레이 방식": ["싱글", "멀티", "coop", "2인"],
+            "핵심 인프라 / 태그 특징": ["오픈월드", "좀비", "고난도", "힐링", "도트", "전략", "공포", "생존", "스팀", "모바일"]
+        };
+
+        let selectedTags = [];
+        let currentCategory = "전체보기";
+
+        function initGroupedTags() {
+            const container = document.getElementById('tagFilterContainer');
+            container.innerHTML = "";
+            for (const [groupName, tags] of Object.entries(tagGroupsData)) {
+                let groupHTML = `<div class="tag-group"><div class="tag-group-label">${groupName}</div><div class="tag-chips">`;
+                tags.forEach(tag => { groupHTML += `<span class="tag-chip" onclick="toggleTag('${tag}', this)"># ${tag}</span>`; });
+                groupHTML += `</div></div>`;
+                container.innerHTML += groupHTML;
+            }
+        }
+
+        function toggleTag(tag, element) {
+            const index = selectedTags.indexOf(tag);
+            if (index > -1) { selectedTags.splice(index, 1); element.classList.remove('active'); } 
+            else { selectedTags.push(tag); element.classList.add('active'); }
+            filterGames();
+        }
+
+        function selectCategory(category, element) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            filterGames();
+        }
+
+        function filterGames() {
+            const searchKeyword = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            if (selectedTags.length === 0 && searchKeyword === "") {
+                document.getElementById('perfectSection').style.display = "none";
+                document.getElementById('partialSection').style.display = "none";
+                document.getElementById('defaultSection').style.display = "block";
+                const baseGames = gamesData.filter(g => currentCategory === "전체보기" || g.category === currentCategory);
+                renderToGrid('defaultGrid', 'defaultCount', baseGames);
+                return;
+            }
+
+            document.getElementById('defaultSection').style.display = "none";
+            document.getElementById('perfectSection').style.display = "block";
+            document.getElementById('partialSection').style.display = "block";
+
+            let perfectMatches = [], partialMatches = [];
+
+            gamesData.forEach(game => {
+                const matchesCategory = (currentCategory === "전체보기" || game.category === currentCategory);
+                if (!matchesCategory) return;
+
+                const matchesText = searchKeyword === "" || 
+                                    game.name.toLowerCase().includes(searchKeyword) || 
+                                    game.category.toLowerCase().includes(searchKeyword) ||
+                                    (game.tags && game.tags.some(t => t.toLowerCase().includes(searchKeyword)));
+                if (!matchesText) return;
+
+                let matchCount = 0;
+                if (selectedTags.length > 0) {
+                    selectedTags.forEach(selectedTag => {
+                        if (game.tags.includes(selectedTag) || game.name.toLowerCase().includes(selectedTag.toLowerCase()) || game.category.toLowerCase().includes(selectedTag.toLowerCase())) {
+                            matchCount++;
+                        }
+                    });
+                } else { matchCount = 999; }
+
+                if (matchCount === 999 || matchCount === selectedTags.length) { perfectMatches.push(game); } 
+                else if (matchCount > 0) { partialMatches.push(game); }
+            });
+
+            renderToGrid('perfectGrid', 'perfectCount', perfectMatches);
+            renderToGrid('partialGrid', 'partialCount', partialMatches);
+        }
+
+        function renderToGrid(gridId, countId, gamesArray) {
+            const grid = document.getElementById(gridId);
+            document.getElementById(countId).innerText = gamesArray.length;
+            grid.innerHTML = "";
+
+            if (gamesArray.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:var(--text-sub); padding:30px; font-size:0.85rem;">조건에 완전히 매칭되는 항목이 없습니다.</p>`;
+                return;
+            }
+
+            gamesArray.forEach(game => {
+                // 인코딩 변환 없이 한글 이름 그대로 적용!
+                const cardHTML = `
+                    <div class="game-card" onclick="openGameModal(${JSON.stringify(game).replace(/"/g, '&quot;')})">
+                        <div class="game-card-img" style="background-image: url('./images/${game.name}.webp'); background-size: cover; background-position: center; border: 1px solid rgba(255,255,255,0.02);"></div>
+                        <h3>${game.name}</h3>
+                        <div class="game-card-footer">
+                            <span class="tag">${game.category}</span>
+                            <span class="price-tag">${game.price}</span>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+            });
+        }
+
+        function openGameModal(game) {
+    const modalImg = document.getElementById('m-img');
+    
+    // 모달창 이미지 컨테이너 설정 (높이 자동, 배경 투명, 가운데 정렬)
+    modalImg.style.height = "auto"; 
+    modalImg.style.background = "transparent";
+    modalImg.style.border = "none";
+    modalImg.style.display = "flex";
+    modalImg.style.justifyContent = "center";
+    
+    // img 태그 설정: 최대 높이(240px)와 최대 너비(85%)를 제한하여 너무 커지지 않게 방지
+    modalImg.innerHTML = `<img src="./images/${game.name}.webp" alt="${game.name}" style="max-height: 240px; max-width: 85%; width: auto; height: auto; border-radius: 14px; border: 1px solid rgba(255,255,255,0.02);">`;
+
+    document.getElementById('m-title').innerText = game.name;
+    document.getElementById('m-desc').innerText = game.desc;
+    document.getElementById('m-price').innerText = game.price;
+    document.getElementById('m-category').innerText = game.category;
+    document.getElementById('m-date').innerText = game.date;
+    document.getElementById('m-multi').innerText = game.multi;
+    document.getElementById('m-specs').innerText = game.specs;
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+        function hideModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+        function closeGameModal(event) { if(event.target === document.getElementById('modalOverlay')) hideModal(); }
+
+        window.onload = () => { initGroupedTags(); filterGames(); };
+    </script>
+</body>
+</html>

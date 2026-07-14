@@ -26,6 +26,9 @@
         .categories { display: flex; justify-content: center; gap: 24px; margin-bottom: 35px; flex-wrap: wrap; }
         .category-btn { background: none; border: none; color: var(--text-sub); font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: color 0.3s ease; }
         .category-btn:hover, .category-btn.active { color: var(--accent-color); font-weight: 600; }
+        /* 💖 즐겨찾기 탭 스타일 추가 */
+        .category-btn.fav-tab { color: #ff4b4b; }
+        .category-btn.fav-tab:hover, .category-btn.fav-tab.active { color: #ff2a2a; }
         
         .tags-filter-section { display: flex; flex-direction: column; gap: 20px; margin-bottom: 50px; padding: 30px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 20px; backdrop-filter: blur(30px); }
         .tag-group { display: flex; align-items: center; gap: 24px; }
@@ -41,13 +44,18 @@
         
         .game-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 18px; padding: 24px; cursor: pointer; backdrop-filter: blur(20px); transition: all 0.5s; display: flex; flex-direction: column; }
         .game-card:hover { transform: translateY(-6px); background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-        .game-card-img { width: 100%; height: 110px; background: rgba(255,255,255,0.01); border-radius: 10px; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.07); font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.02); }
-        .game-card h3 { font-size: 1.15rem; color: #fff; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+        .game-card-img { width: 100%; height: 380px; background: rgba(255,255,255,0.01); border-radius: 10px; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.07); font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.02); }
+        
+        /* 💖 제목과 하트를 묶어주는 래퍼 스타일 */
+        .title-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+        .game-card h3 { font-size: 1.15rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; flex-grow: 1; margin: 0; }
+        .card-heart { color: #ff4b4b; font-size: 0.95rem; flex-shrink: 0; display: none; }
+
         .game-card-footer { display: flex; justify-content: space-between; margin-top: auto; font-size: 0.75rem; color: var(--text-sub); font-weight: 500; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(40px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.5s; z-index: 1000; padding: 20px; }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
-        .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); width: 100%; max-width: 580px; padding: 44px; border-radius: 28px; box-shadow: 0 40px 100px rgba(0,0,0,0.5); transform: scale(0.95); transition: all 0.5s; }
+        .modal-content { background: var(--modal-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); width: 100%; max-width: 580px; padding: 44px; border-radius: 28px; box-shadow: 0 40px 100px rgba(0,0,0,0.5); transform: scale(0.95); transition: all 0.5s; max-height: 90vh; overflow-y: auto;}
         .modal-overlay.active .modal-content { transform: scale(1); }
         .modal-img { width: 100%; height: 140px; background: rgba(255,255,255,0.01); border-radius: 14px; margin-bottom: 28px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.02); font-size: 0.8rem; font-weight: 600; }
         .modal-content h2 { font-size: 2rem; color: #fff; margin-bottom: 12px; font-weight: 700; }
@@ -56,9 +64,38 @@
         .info-item { border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 12px; }
         .info-item span:first-child { display: block; color: var(--text-sub); font-size: 0.8rem; margin-bottom: 4px; font-weight: 500; }
         .info-item span:last-child { color: #fff; font-size: 0.95rem; font-weight: 500; }
+        
+        /* 💖 모달창 즐겨찾기 버튼 스타일 */
+        .fav-btn { width: 100%; padding: 16px; background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--glass-border); border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.95rem; margin-bottom: 12px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .close-btn { width: 100%; padding: 16px; background: #fff; color: #000; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
         .close-btn:hover { background: #e8e8ed; }
-    </style>
+    /* 테마 전환 버튼 (메인 버튼과 디자인 동일, 우측 상단 고정) */
+.theme-toggle-btn { position: fixed; top: 30px; right: 30px; display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 30px; color: var(--text-main); font-size: 0.9rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); z-index: 100; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+.theme-toggle-btn:hover { background: rgba(255, 255, 255, 0.08); transform: translateY(-3px); border-color: rgba(255, 255, 255, 0.15); }
+
+/* 라이트 모드 전환 시 덮어씌워질 색상 변수들 */
+body.light-mode {
+    --bg-color: #f0f0f5;
+    --text-main: #1d1d1f;
+    --text-sub: #55555d;
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-highlight: rgba(255, 255, 255, 0.8);
+    --modal-bg: rgba(255, 255, 255, 0.9);
+}
+
+/* 라이트 모드일 때 글씨 색상 예외 처리 */
+body.light-mode header h1,
+body.light-mode .search-box input,
+body.light-mode .game-card h3,
+body.light-mode .modal-content h2,
+body.light-mode .info-item span:last-child { color: #000; }
+
+body.light-mode .search-box input::placeholder { color: #888; }
+body.light-mode .close-btn { background: #000; color: #fff; }
+body.light-mode .close-btn:hover { background: #333; }
+body.light-mode .theme-toggle-btn, 
+body.light-mode .floating-back-btn { background: rgba(0,0,0,0.05); }</style>
 </head>
 <body>
     <a href="index.html" class="floating-back-btn">
@@ -82,6 +119,7 @@
             <button class="category-btn" onclick="selectCategory('액션/스릴러', this)">액션/스릴러</button>
             <button class="category-btn" onclick="selectCategory('드라마/로맨스', this)">드라마/로맨스</button>
             <button class="category-btn" onclick="selectCategory('애니메이션', this)">애니메이션</button>
+            <button class="category-btn fav-tab" onclick="selectCategory('즐겨찾기', this)">❤️ 즐겨찾기만 보기</button>
         </div>
 
         <div class="tags-filter-section" id="tagFilterContainer"></div>
@@ -95,7 +133,7 @@
             <div class="game-grid" id="partialGrid"></div>
         </div>
         <div id="defaultSection">
-            <div class="section-title">ALL MOVIES <span id="defaultCount">0</span></div>
+            <div class="section-title" id="mainSectionTitle">ALL MOVIES <span id="defaultCount">0</span></div>
             <div class="game-grid" id="defaultGrid"></div>
         </div>
     </section>
@@ -116,6 +154,7 @@
                 <div class="info-item"><span>RUNTIME</span><span id="m-multi">-</span></div>
                 <div class="info-item" style="grid-column: span 2;"><span>STREAMING PLATFORM</span><span id="m-specs">-</span></div>
             </div>
+            <button id="m-favBtn" class="fav-btn" onclick="toggleFavoriteCurrent()">🤍 즐겨찾기 추가</button>
             <button class="close-btn" onclick="hideModal()">닫기</button>
         </div>
     </div>
@@ -182,6 +221,7 @@
 
         let selectedTags = [];
         let currentCategory = "전체보기";
+        let currentOpenedGame = null; // 💖 현재 열린 항목 저장용
 
         function initGroupedTags() {
             const container = document.getElementById('tagFilterContainer');
@@ -210,6 +250,23 @@
 
         function filterGames() {
             const searchKeyword = document.getElementById('searchInput').value.toLowerCase().trim();
+            const favorites = JSON.parse(localStorage.getItem('movie_favorites') || '[]');
+
+            // 💖 즐겨찾기 메뉴 선택 시 렌더링 로직
+            if (currentCategory === "즐겨찾기") {
+                document.getElementById('perfectSection').style.display = "none";
+                document.getElementById('partialSection').style.display = "none";
+                document.getElementById('defaultSection').style.display = "block";
+                document.getElementById('mainSectionTitle').innerHTML = `MY FAVORITES <span id="defaultCount">0</span>`;
+                
+                const favGames = gamesData.filter(g => favorites.includes(g.name) && 
+                    (searchKeyword === "" || g.name.toLowerCase().includes(searchKeyword) || g.price.toLowerCase().includes(searchKeyword) || g.category.toLowerCase().includes(searchKeyword) || (g.tags && g.tags.some(t => t.toLowerCase().includes(searchKeyword))))
+                );
+                renderToGrid('defaultGrid', 'defaultCount', favGames);
+                return;
+            }
+
+            document.getElementById('mainSectionTitle').innerHTML = `ALL MOVIES <span id="defaultCount">0</span>`;
 
             if (selectedTags.length === 0 && searchKeyword === "") {
                 document.getElementById('perfectSection').style.display = "none";
@@ -263,11 +320,17 @@
                 return;
             }
 
+            const favorites = JSON.parse(localStorage.getItem('movie_favorites') || '[]');
+
             gamesArray.forEach(game => {
+                const isFav = favorites.includes(game.name);
                 const cardHTML = `
                     <div class="game-card" onclick="openGameModal(${JSON.stringify(game).replace(/"/g, '&quot;')})">
                         <div class="game-card-img" style="background-image: url('./images/${game.name}.webp'); background-size: cover; background-position: center; border: 1px solid rgba(255,255,255,0.02);"></div>
-                        <h3>${game.name}</h3>
+                        <div class="title-wrapper">
+                            <h3>${game.name}</h3>
+                            <span class="card-heart" style="display: ${isFav ? 'block' : 'none'}">❤️</span>
+                        </div>
                         <div class="game-card-footer">
                             <span class="tag">${game.category}</span>
                             <span class="price-tag">${game.price}</span>
@@ -276,9 +339,10 @@
                 `;
                 grid.innerHTML += cardHTML;
             });
-        }
+        initVisualEffects();}
 
         function openGameModal(game) {
+            currentOpenedGame = game;
             const modalImg = document.getElementById('m-img');
             
             modalImg.style.height = "auto"; 
@@ -296,13 +360,123 @@
             document.getElementById('m-date').innerText = game.date;
             document.getElementById('m-multi').innerText = game.multi;
             document.getElementById('m-specs').innerText = game.specs;
+            
+            updateFavoriteButtonState(); // 💖 버튼 상태 최신화
             document.getElementById('modalOverlay').classList.add('active');
         }
 
-        function hideModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+        // 💖 즐겨찾기 버튼 상태 업데이트 함수
+        function updateFavoriteButtonState() {
+            const favBtn = document.getElementById('m-favBtn');
+            if (!currentOpenedGame) return;
+            
+            const favorites = JSON.parse(localStorage.getItem('movie_favorites') || '[]');
+            if (favorites.includes(currentOpenedGame.name)) {
+                favBtn.innerText = "❤️ 즐겨찾기 해제";
+                favBtn.style.background = "rgba(255, 75, 75, 0.1)";
+                favBtn.style.borderColor = "rgba(255, 75, 75, 0.2)";
+                favBtn.style.color = "#ff4b4b";
+            } else {
+                favBtn.innerText = "🤍 즐겨찾기 추가";
+                favBtn.style.background = "rgba(255, 255, 255, 0.03)";
+                favBtn.style.borderColor = "var(--glass-border)";
+                favBtn.style.color = "#fff";
+            }
+        }
+
+        // 💖 즐겨찾기 추가/해제 토글 함수
+        function toggleFavoriteCurrent() {
+            if (!currentOpenedGame) return;
+            
+            let favorites = JSON.parse(localStorage.getItem('movie_favorites') || '[]');
+            const index = favorites.indexOf(currentOpenedGame.name);
+            
+            if (index > -1) { favorites.splice(index, 1); } 
+            else { favorites.push(currentOpenedGame.name); } 
+            
+            localStorage.setItem('movie_favorites', JSON.stringify(favorites));
+            
+            updateFavoriteButtonState(); 
+            filterGames(); 
+        }
+
+        function hideModal() { 
+            document.getElementById('modalOverlay').classList.remove('active'); 
+            currentOpenedGame = null;
+        }
         function closeGameModal(event) { if(event.target === document.getElementById('modalOverlay')) hideModal(); }
 
-        window.onload = () => { initGroupedTags(); filterGames(); };
-    </script>
+        window.onload = () => { initGroupedTags(); filterGames(); initTheme(); };
+    // 테마 전환 함수
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    localStorage.setItem('site_theme', isLight ? 'light' : 'dark');
+    document.getElementById('themeBtn').innerText = isLight ? '🌙 다크 모드' : '☀️ 라이트 모드';
+}
+
+// 페이지 로드 시 기존 설정된 테마 불러오기
+function initTheme() {
+    if (localStorage.getItem('site_theme') === 'light') {
+        document.body.classList.add('light-mode');
+        document.getElementById('themeBtn').innerText = '🌙 다크 모드';
+    }
+}
+    // 💖 시각적 퍼포먼스: 3D 틸트 및 스크롤 등장 애니메이션
+function initVisualEffects() {
+    const cards = document.querySelectorAll('.hub-card, .game-card');
+    
+    // 1. 스크롤 등장 애니메이션 (Intersection Observer)
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                el.style.transition = 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+                
+                // 애니메이션이 끝나면 기존 CSS(:hover)와 충돌하지 않도록 인라인 스타일 제거
+                setTimeout(() => { 
+                    el.style.transition = ''; 
+                    el.style.transform = ''; 
+                }, 800);
+                
+                obs.unobserve(el); // 한 번 등장하면 다시 숨지 않게 처리
+            }
+        });
+    }, { threshold: 0.1 });
+
+    cards.forEach(card => {
+        // 초기 숨김 상태 세팅
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(40px)';
+        observer.observe(card);
+
+        // 2. 3D 틸트 (입체 글래스) 효과
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left; 
+            const y = e.clientY - rect.top;  
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            // 마우스 위치에 따른 기울기 계산 (최대 10도)
+            const rotateX = ((y - centerY) / centerY) * -10; 
+            const rotateY = ((x - centerX) / centerX) * 10;  
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale3d(1.02, 1.02, 1.02)`;
+            card.style.transition = 'none'; // 마우스가 움직일 때는 딜레이 없이 즉각 반응
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = ''; // 마우스가 떠나면 원상복구
+            card.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'; // 부드럽게 복구
+        });
+    });
+}</script>
 </body>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">
+    ☀️ 라이트 모드
+</button>
 </html>

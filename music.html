@@ -26,7 +26,6 @@
         .categories { display: flex; justify-content: center; gap: 24px; margin-bottom: 35px; flex-wrap: wrap; }
         .category-btn { background: none; border: none; color: var(--text-sub); font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: color 0.3s ease; }
         .category-btn:hover, .category-btn.active { color: var(--accent-color); font-weight: 600; }
-        /* 💖 즐겨찾기 탭 스타일 별도 지정 */
         .category-btn.fav-tab { color: #ff4b4b; }
         .category-btn.fav-tab:hover, .category-btn.fav-tab.active { color: #ff2a2a; }
         
@@ -44,12 +43,14 @@
         
         .game-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 18px; padding: 24px; cursor: pointer; backdrop-filter: blur(20px); transition: all 0.5s; display: flex; flex-direction: column; position: relative; }
         .game-card:hover { transform: translateY(-6px); background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-        .game-card-img { width: 100%; height: 110px; background: rgba(255, 255, 255, 0.01); border-radius: 10px; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.07); font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; }
-        .game-card h3 { font-size: 1.15rem; color: #fff; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; padding-right: 25px; }
-        .game-card-footer { display: flex; justify-content: space-between; margin-top: auto; font-size: 0.75rem; color: var(--text-sub); font-weight: 500; }
+        .game-card-img { width: 100%; aspect-ratio: 1 / 1; background: rgba(255, 255, 255, 0.01); border-radius: 10px; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.07); font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.02); overflow: hidden; }
+        
+        /* 💖 제목과 하트를 묶어주는 래퍼 스타일 (오류 해결 핵심 부분) */
+        .title-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+        .game-card h3 { font-size: 1.15rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; flex-grow: 1; }
+        .card-heart { color: #ff4b4b; font-size: 0.95rem; flex-shrink: 0; display: none; }
 
-        /* 카드 오른쪽 상단 미니 하트 표시 */
-        .card-heart { position: absolute; top: 152px; right: 24px; color: #ff4b4b; font-size: 0.9rem; display: none; }
+        .game-card-footer { display: flex; justify-content: space-between; margin-top: auto; font-size: 0.75rem; color: var(--text-sub); font-weight: 500; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.4s ease; z-index: 1000; padding: 20px; }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
@@ -66,11 +67,36 @@
         .info-item span:first-child { display: block; color: var(--text-sub); font-size: 0.8rem; margin-bottom: 4px; font-weight: 500; }
         .info-item span:last-child { color: #fff; font-size: 0.95rem; font-weight: 500; }
         
-        /* 💖 모달창 즐겨찾기 버튼 스타일 */
         .fav-btn { width: 100%; padding: 16px; background: rgba(255,255,255,0.03); color: #fff; border: 1px solid var(--glass-border); border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.95rem; margin-bottom: 12px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .close-btn { width: 100%; padding: 16px; background: #fff; color: #000; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
         .close-btn:hover { background: #e8e8ed; }
-    </style>
+    /* 테마 전환 버튼 (메인 버튼과 디자인 동일, 우측 상단 고정) */
+.theme-toggle-btn { position: fixed; top: 30px; right: 30px; display: flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight); border-radius: 30px; color: var(--text-main); font-size: 0.9rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); z-index: 100; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+.theme-toggle-btn:hover { background: rgba(255, 255, 255, 0.08); transform: translateY(-3px); border-color: rgba(255, 255, 255, 0.15); }
+
+/* 라이트 모드 전환 시 덮어씌워질 색상 변수들 */
+body.light-mode {
+    --bg-color: #f0f0f5;
+    --text-main: #1d1d1f;
+    --text-sub: #55555d;
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-highlight: rgba(255, 255, 255, 0.8);
+    --modal-bg: rgba(255, 255, 255, 0.9);
+}
+
+/* 라이트 모드일 때 글씨 색상 예외 처리 */
+body.light-mode header h1,
+body.light-mode .search-box input,
+body.light-mode .game-card h3,
+body.light-mode .modal-content h2,
+body.light-mode .info-item span:last-child { color: #000; }
+
+body.light-mode .search-box input::placeholder { color: #888; }
+body.light-mode .close-btn { background: #000; color: #fff; }
+body.light-mode .close-btn:hover { background: #333; }
+body.light-mode .theme-toggle-btn, 
+body.light-mode .floating-back-btn { background: rgba(0,0,0,0.05); }</style>
 </head>
 <body>
     <a href="index.html" class="floating-back-btn">
@@ -199,7 +225,7 @@
 
         let selectedTags = [];
         let currentCategory = "전체보기";
-        let currentOpenedGame = null; // 현재 열린 곡 객체 저장용
+        let currentOpenedGame = null;
 
         function initGroupedTags() {
             const container = document.getElementById('tagFilterContainer');
@@ -230,7 +256,6 @@
             const searchKeyword = document.getElementById('searchInput').value.toLowerCase().trim();
             const favorites = JSON.parse(localStorage.getItem('music_favorites') || '[]');
 
-            // 💖 즐겨찾기 메뉴 선택 시 특별 필터링 처리
             if (currentCategory === "즐겨찾기") {
                 document.getElementById('perfectSection').style.display = "none";
                 document.getElementById('partialSection').style.display = "none";
@@ -244,7 +269,6 @@
                 return;
             }
 
-            // 기본 타이틀 원복
             document.getElementById('mainSectionTitle').innerHTML = `ALL TRACKS <span id="defaultCount">0</span>`;
 
             if (selectedTags.length === 0 && searchKeyword === "") {
@@ -288,39 +312,45 @@
             renderToGrid('partialGrid', 'partialCount', partialMatches);
         }
 
+        // 💖 렌더링 함수 내 HTML 구조 변경 (.title-wrapper 추가)
         function renderToGrid(gridId, countId, gamesArray) {
-            const grid = document.getElementById(gridId);
-            document.getElementById(countId).innerText = gamesArray.length;
-            grid.innerHTML = "";
+    const grid = document.getElementById(gridId);
+    document.getElementById(countId).innerText = gamesArray.length;
+    grid.innerHTML = "";
 
-            if (gamesArray.length === 0) {
-                grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:var(--text-sub); padding:30px; font-size:0.85rem;">조건에 일치하는 항목이 없습니다.</p>`;
-                return;
-            }
+    if (gamesArray.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:var(--text-sub); padding:30px; font-size:0.85rem;">조건에 일치하는 항목이 없습니다.</p>`;
+        return;
+    }
 
-            const favorites = JSON.parse(localStorage.getItem('music_favorites') || '[]');
+    const favorites = JSON.parse(localStorage.getItem('music_favorites') || '[]');
 
-            gamesArray.forEach(game => {
-                const safeName = encodeURIComponent(game.name.replace(/[():]/g, '_'));
-                const isFav = favorites.includes(game.name);
-                const cardHTML = `
-                    <div class="game-card" onclick="openGameModal(${JSON.stringify(game).replace(/"/g, '&quot;')})">
-                        <div class="game-card-img">
-                            <img src="images/${safeName}.webp" alt="${game.name}" 
-                                 onerror="if(!this.dataset.tried){this.dataset.tried=true; this.src='images/${safeName}.jpg';}else{this.onerror=null; this.src='https://via.placeholder.com/300x110/1a1d24/86868b?text=No+Image';}"
-                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
-                        </div>
-                        <h3>${game.name}</h3>
-                        <span class="card-heart" style="display: ${isFav ? 'block' : 'none'}">❤️</span>
-                        <div class="game-card-footer">
-                            <span class="tag">${game.category}</span>
-                            <span class="price-tag">${game.price}</span>
-                        </div>
-                    </div>
-                `;
-                grid.innerHTML += cardHTML;
-            });
-        }
+    gamesArray.forEach(game => {
+        const safeName = encodeURIComponent(game.name.replace(/[():]/g, '_'));
+        const isFav = favorites.includes(game.name);
+        const cardHTML = `
+            <div class="game-card" onclick="openGameModal(${JSON.stringify(game).replace(/"/g, '&quot;')})">
+                <div class="game-card-img">
+                    <img src="images/${safeName}.webp" alt="${game.name}" 
+                         onerror="if(!this.dataset.tried){this.dataset.tried=true; this.src='images/${safeName}.jpg';}else{this.onerror=null; this.src='https://via.placeholder.com/300x110/1a1d24/86868b?text=No+Image';}"
+                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                </div>
+                <div class="title-wrapper">
+                    <h3>${game.name}</h3>
+                    <span class="card-heart" style="display: ${isFav ? 'block' : 'none'}">❤️</span>
+                </div>
+                <div class="game-card-footer">
+                    <span class="tag">${game.category}</span>
+                    <span class="price-tag">${game.price}</span>
+                </div>
+            </div>
+        `;
+        grid.innerHTML += cardHTML;
+    });
+
+    // 💖 카드 렌더링이 모두 끝난 직후 시각 효과 적용!
+    initVisualEffects();
+}
 
         function openGameModal(game) {
             currentOpenedGame = game; 
@@ -331,12 +361,14 @@
             if (game.youtubeId) {
                 ytContainer.style.display = "block";
                 modalImg.style.display = "none";
+                // 💖 유튜브 오류 153 해결을 위한 nocookie 및 referrerpolicy 적용 완료!
                 ytContainer.innerHTML = `
                     <iframe width="100%" height="100%" 
-                            src="https://www.youtube.com/embed/${game.youtubeId}?autoplay=1&rel=0" 
+                            src="https://www.youtube-nocookie.com/embed/${game.youtubeId}?autoplay=1&rel=0" 
                             title="YouTube video player" frameborder="0" 
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            allowfullscreen style="border: none;">
+                            allowfullscreen style="border: none;"
+                            referrerpolicy="strict-origin-when-cross-origin">
                     </iframe>`;
             } else {
                 ytContainer.style.display = "none";
@@ -355,11 +387,10 @@
             document.getElementById('m-multi').innerText = game.multi;
             document.getElementById('m-specs').innerText = game.specs;
             
-            updateFavoriteButtonState(); // 즐겨찾기 버튼 텍스트 최신화
+            updateFavoriteButtonState(); 
             document.getElementById('modalOverlay').classList.add('active');
         }
 
-        // 💖 즐겨찾기 버튼 상태(텍스트/스타일) 업데이트 함수
         function updateFavoriteButtonState() {
             const favBtn = document.getElementById('m-favBtn');
             if (!currentOpenedGame) return;
@@ -378,20 +409,19 @@
             }
         }
 
-        // 💖 즐겨찾기 추가/해제 토글 로직
         function toggleFavoriteCurrent() {
             if (!currentOpenedGame) return;
             
             let favorites = JSON.parse(localStorage.getItem('music_favorites') || '[]');
             const index = favorites.indexOf(currentOpenedGame.name);
             
-            if (index > -1) { favorites.splice(index, 1); } // 이미 있으면 삭제 
-            else { favorites.push(currentOpenedGame.name); } // 없으면 추가
+            if (index > -1) { favorites.splice(index, 1); } 
+            else { favorites.push(currentOpenedGame.name); } 
             
             localStorage.setItem('music_favorites', JSON.stringify(favorites));
             
-            updateFavoriteButtonState(); // 버튼 UI 즉시 변경
-            filterGames(); // 뒤에 깔린 메인 화면 리스트 새로고침 (하트 즉시 표기되도록)
+            updateFavoriteButtonState(); 
+            filterGames(); 
         }
 
         function hideModal() { 
@@ -402,7 +432,77 @@
         
         function closeGameModal(event) { if(event.target === document.getElementById('modalOverlay')) hideModal(); }
 
-        window.onload = () => { initGroupedTags(); filterGames(); };
-    </script>
+        window.onload = () => { initGroupedTags(); filterGames(); initTheme(); };
+    // 테마 전환 함수
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    localStorage.setItem('site_theme', isLight ? 'light' : 'dark');
+    document.getElementById('themeBtn').innerText = isLight ? '🌙 다크 모드' : '☀️ 라이트 모드';
+}
+
+// 페이지 로드 시 기존 설정된 테마 불러오기
+function initTheme() {
+    if (localStorage.getItem('site_theme') === 'light') {
+        document.body.classList.add('light-mode');
+        document.getElementById('themeBtn').innerText = '🌙 다크 모드';
+    }
+}
+    // 💖 시각적 퍼포먼스: 3D 틸트 및 스크롤 등장 애니메이션
+function initVisualEffects() {
+    const cards = document.querySelectorAll('.hub-card, .game-card');
+    
+    // 1. 스크롤 등장 애니메이션 (Intersection Observer)
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                el.style.transition = 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+                
+                // 애니메이션이 끝나면 기존 CSS(:hover)와 충돌하지 않도록 인라인 스타일 제거
+                setTimeout(() => { 
+                    el.style.transition = ''; 
+                    el.style.transform = ''; 
+                }, 800);
+                
+                obs.unobserve(el); // 한 번 등장하면 다시 숨지 않게 처리
+            }
+        });
+    }, { threshold: 0.1 });
+
+    cards.forEach(card => {
+        // 초기 숨김 상태 세팅
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(40px)';
+        observer.observe(card);
+
+        // 2. 3D 틸트 (입체 글래스) 효과
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left; 
+            const y = e.clientY - rect.top;  
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            // 마우스 위치에 따른 기울기 계산 (최대 10도)
+            const rotateX = ((y - centerY) / centerY) * -10; 
+            const rotateY = ((x - centerX) / centerX) * 10;  
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale3d(1.02, 1.02, 1.02)`;
+            card.style.transition = 'none'; // 마우스가 움직일 때는 딜레이 없이 즉각 반응
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = ''; // 마우스가 떠나면 원상복구
+            card.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'; // 부드럽게 복구
+        });
+    });
+}</script>
 </body>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">
+    ☀️ 라이트 모드
+</button>
 </html>

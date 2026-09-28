@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>물리학 역학 공식 플래시카드</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            startup: {
+                typeset: false // 수동으로 렌더링하기 위해 초기 자동 렌더링 비활성화
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* 웹폰트 적용 */
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        /* 플래시카드 3D 뒤집기 효과 */
+        .scene {
+            width: 100%;
+            height: 350px;
+            perspective: 1000px; /* 3D 원근감 */
+            margin: 20px auto;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card__face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card__face--front {
+            background-color: white;
+            border: 2px solid #e2e8f0;
+        }
+
+        .card__face--back {
+            background-color: #f8fafc;
+            border: 2px solid #cbd5e1;
+            transform: rotateY(180deg);
+        }
+
+        /* 텍스트 드래그 방지 */
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-xl w-full">
+        <!-- 헤더 -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">🚀 역학 공식 마스터</h1>
+            <p class="text-slate-500">카드를 클릭하여 수식을 확인하세요!</p>
+        </div>
+
+        <!-- 진행 상태 바 -->
+        <div class="w-full bg-slate-200 rounded-full h-2.5 mb-2">
+            <div id="progressBar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <div class="text-right text-sm text-slate-500 font-medium mb-4">
+            <span id="currentCardNum">1</span> / <span id="totalCardNum">20</span>
+        </div>
+
+        <!-- 플래시카드 영역 -->
+        <div class="scene no-select" id="cardScene">
+            <div class="card" id="flashcard">
+                <!-- 앞면 (질문) -->
+                <div class="card__face card__face--front">
+                    <span id="cardCategory" class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold mb-4 tracking-wide uppercase"></span>
+                    <h2 id="cardQuestion" class="text-2xl font-bold text-slate-800 text-center leading-tight"></h2>
+                    <p class="text-slate-400 text-sm mt-6 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" /></svg>
+                        클릭해서 뒤집기
+                    </p>
+                </div>
+                <!-- 뒷면 (정답/공식) -->
+                <div class="card__face card__face--back">
+                    <p class="text-sm font-semibold text-slate-500 mb-4">공식</p>
+                    <div id="cardAnswer" class="text-3xl text-slate-800 text-center w-full overflow-x-auto py-2">
+                        <!-- 수식이 여기에 렌더링됩니다 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 컨트롤 버튼 -->
+        <div class="flex justify-between items-center mt-8 gap-4">
+            <button onclick="prevCard()" class="flex-1 py-3 px-4 bg-white border border-slate-300 rounded-xl font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm flex justify-center items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                이전
+            </button>
+            <button onclick="shuffleCards()" class="p-3 bg-white border border-slate-300 rounded-xl text-indigo-600 hover:bg-indigo-50 transition shadow-sm" title="카드 섞기">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            </button>
+            <button onclick="nextCard()" class="flex-1 py-3 px-4 bg-indigo-600 rounded-xl font-semibold text-white hover:bg-indigo-700 transition shadow-sm shadow-indigo-200 flex justify-center items-center gap-2">
+                다음
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // PDF 내용을 바탕으로 작성된 플래시카드 데이터
+        const originalCards = [
+            // 1. 등가속도 직선 운동
+            { category: "등가속도 직선 운동", question: "속도와 시간의 관계", answer: "\\[ v = v_0 + at \\]" },
+            { category: "등가속도 직선 운동", question: "변위와 시간의 관계", answer: "\\[ s = v_0t + \\frac{1}{2}at^2 \\]" },
+            { category: "등가속도 직선 운동", question: "속도와 변위의 관계 (t 소거)", answer: "\\[ 2as = v^2 - v_0^2 \\]" },
+            
+            // 2. 빗면에서의 운동
+            { category: "빗면에서의 운동", question: "중력의 빗면 나란한 성분", answer: "\\[mg \\sin\\theta \\]" },
+            { category: "빗면에서의 운동", question: "중력의 빗면 수직인 성분 (수직항력 N)", answer: "\\[N = mg \\cos\\theta \\]" },
+            { category: "빗면에서의 운동", question: "마찰 빗면에서의 가속도", answer: "\\[a = \\frac{mg\\sin\\theta - f}{m} \\]" },
+            
+            // 3. 포물선 운동
+            { category: "포물선 운동", question: "처음 속도의 수평 / 연직 성분", answer: "\\[v_{0x} = v_0 \\cos\\theta \\\\ v_{0y} = v_0 \\sin\\theta \\]" },
+            { category: "포물선 운동", question: "t초 후의 수평 / 연직 속도", answer: "\\[ v_x = v_0 \\cos\\theta \\\\ v_y = v_0 \\sin\\theta - gt \\]" },
+            { category: "포물선 운동", question: "t초 후의 수평 / 연직 변위", answer: "\\[ x = (v_0 \\cos\\theta)t \\\\ y = (v_0 \\sin\\theta)t - \\frac{1}{2}gt^2 \\]" },
+            { category: "포물선 운동", question: "최고점 도달 시간 (t)", answer: "\\[t_H = \\frac{v_0 \\sin\\theta}{g} \\]" },
+            { category: "포물선 운동", question: "최고점의 높이 (H)", answer: "\\[H = \\frac{(v_0 \\sin\\theta)^2}{2g} \\]" },
+            { category: "포물선 운동", question: "수평 도달 거리 (R)", answer: "\\[R = \\frac{v_0^2 \\sin 2\\theta}{g} \\]" },
+            { category: "포물선 운동", question: "역학적 에너지 보존 (포물선)", answer: "\\[ \\frac{1}{2}mv_0^2 = \\frac{1}{2}m(v_x^2 + v_y^2) + mgh \\]" },
+
+            // 4. 등속 원운동
+            { category: "등속 원운동", question: "각속도 (ω)", answer: "\\[\\omega = \\frac{\\Delta\\theta}{\\Delta t} \\]" },
+            { category: "등속 원운동", question: "주기 (T)", answer: "\\[T = \\frac{2\\pi r}{v} = \\frac{2\\pi}{\\omega} \\]" },
+            { category: "등속 원운동", question: "속력과 각속도의 관계", answer: "\\[v = r\\omega \\]" },
+            { category: "등속 원운동", question: "구심 가속도 (a)", answer: "\\[ a = \\frac{v^2}{r} = r\\omega^2 \\]" },
+            { category: "등속 원운동", question: "구심력 (F)", answer: "\\[ F = m\\frac{v^2}{r} = mr\\omega^2 \\]" },
+
+            // 5. 중력과 케플러 법칙
+            { category: "중력과 케플러 법칙", question: "뉴턴 중력 법칙", answer: "\\[F = G\\frac{m_1 m_2}{r^2} \\]" },
+            { category: "중력과 케플러 법칙", question: "케플러 제3법칙", answer: "\\[ T^2 = \\frac{4\\pi^2}{GM}r^3 \\]" },
+            { category: "중력과 케플러 법칙", question: "고도 h 인공위성에 작용하는 구심력", answer: "\\[F = \\frac{mv^2}{R+h} = G\\frac{mM}{(R+h)^2} \\]" },
+            { category: "중력과 케플러 법칙", question: "고도 h 인공위성의 속력 (v)", answer: "\\[v = \\sqrt{\\frac{GM}{R+h}} \\]" },
+            { category: "중력과 케플러 법칙", question: "고도 h 인공위성의 주기 (T)", answer: "\\[ T^2 = \\frac{4\\pi^2}{GM}(R+h)^3 \\]" },
+
+            // 6. 역학적 에너지
+            { category: "역학적 에너지", question: "위치 에너지 (지표면 근처, 높이 h)", answer: "\\[ E_p = mgh \\]" },
+            { category: "역학적 에너지", question: "위치 에너지 (지표면에서 먼 거리 r)", answer: "\\[E_p = -G\\frac{mM}{r} \\]" },
+            { category: "역학적 에너지", question: "중력에 의한 역학적 에너지 보존", answer: "\\[E = \\frac{1}{2}mv^2 - G\\frac{mM}{r} = \\text{일정} \\]" },
+            { category: "역학적 에너지", question: "인공위성의 역학적 에너지", answer: "\\[E = -G\\frac{mM}{2r} \\]" },
+            { category: "역학적 에너지", question: "행성의 탈출 속도", answer: "\\[v_e = \\sqrt{\\frac{2GM}{R}} \\]" }
+        ];
+
+        let cards = [...originalCards];
+        let currentIndex = 0;
+        let isFlipped = false;
+
+        // DOM 요소 캐싱
+        const flashcard = document.getElementById('flashcard');
+        const cardCategory = document.getElementById('cardCategory');
+        const cardQuestion = document.getElementById('cardQuestion');
+        const cardAnswer = document.getElementById('cardAnswer');
+        const currentCardNum = document.getElementById('currentCardNum');
+        const totalCardNum = document.getElementById('totalCardNum');
+        const progressBar = document.getElementById('progressBar');
+
+        // 카드 뒤집기 이벤트
+        flashcard.addEventListener('click', () => {
+            isFlipped = !isFlipped;
+            flashcard.classList.toggle('is-flipped');
+            
+            // 뒤집었을 때 수식이 안 보일 수 있는 이슈 방지 (MathJax 리렌더링 확인용)
+            if (isFlipped) {
+                renderMath();
+            }
+        });
+
+        // 카드 내용 화면에 표시
+        function updateCardDisplay() {
+            // 카드가 뒷면인 상태로 넘어가지 않도록 초기화
+            if (isFlipped) {
+                flashcard.classList.remove('is-flipped');
+                isFlipped = false;
+                
+                // 애니메이션이 끝난 후 내용 변경 (부드러운 전환)
+                setTimeout(() => {
+                    setContent();
+                }, 300);
+            } else {
+                setContent();
+            }
+        }
+
+        function setContent() {
+            const card = cards[currentIndex];
+            cardCategory.textContent = card.category;
+            cardQuestion.innerHTML = card.question.replace(/\n/g, '<br>');
+            cardAnswer.innerHTML = card.answer;
+            
+            // 상태바 및 숫자 업데이트
+            currentCardNum.textContent = currentIndex + 1;
+            totalCardNum.textContent = cards.length;
+            const progress = ((currentIndex + 1) / cards.length) * 100;
+            progressBar.style.width = progress + '%';
+
+            // MathJax 렌더링 호출
+            renderMath();
+        }
+
+        // 수식 렌더링 함수
+        function renderMath() {
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([cardAnswer]).catch((err) => console.log('MathJax error: ', err));
+            }
+        }
+
+        // 이전 카드
+        function prevCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCardDisplay();
+            }
+        }
+
+        // 다음 카드
+        function nextCard() {
+            if (currentIndex < cards.length - 1) {
+                currentIndex++;
+                updateCardDisplay();
+            }
+        }
+
+        // 카드 섞기 (피셔-예이츠 셔플 알고리즘)
+        function shuffleCards() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            currentIndex = 0;
+            updateCardDisplay();
+        }
+
+        // 키보드 방향키 조작 지원
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                if(e.key === ' ') e.preventDefault();
+                if(isFlipped) nextCard();
+                else flashcard.click();
+            } else if (e.key === 'ArrowLeft') {
+                prevCard();
+            }
+        });
+
+        // 초기화
+        window.addEventListener('load', () => {
+            updateCardDisplay();
+            // 스크립트 로드 완료 후 수식 렌더링 한 번 실행
+            setTimeout(renderMath, 500); 
+        });
+
+    </script>
+</body>
+</html>
